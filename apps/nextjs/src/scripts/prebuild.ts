@@ -1,8 +1,4 @@
-import { loadEnvConfig } from "@next/env";
-
 import { env } from "@defierros/env";
-
-loadEnvConfig(process.cwd());
 
 async function execute() {
   for (const key in env) {

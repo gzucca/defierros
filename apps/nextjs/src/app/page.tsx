@@ -8,6 +8,9 @@ import {
   PostList,
 } from "./_components/posts";
 
+//THIS IS BECAUSE OF AUTHSHOWCASE
+export const dynamic = 'force-dynamic';
+
 export default function HomePage() {
   // You can await this here if you don't want to show Suspense fallback below
   void api.post.all.prefetch();

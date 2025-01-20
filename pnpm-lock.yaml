@@ -248,9 +248,6 @@ importers:
       '@defierros/validators':
         specifier: workspace:*
         version: link:../../packages/validators
-      '@next/env':
-        specifier: ^15.1.5
-        version: 15.1.5
       '@t3-oss/env-nextjs':
         specifier: ^0.11.1
         version: 0.11.1(typescript@5.7.3)(zod@3.24.1)
@@ -2304,9 +2301,6 @@ packages:
 
   '@next/env@14.2.23':
     resolution: {integrity: sha512-CysUC9IO+2Bh0omJ3qrb47S8DtsTKbFidGm6ow4gXIG6reZybqxbkH2nhdEm1tC8SmgzDdpq3BIML0PWsmyUYA==}
-
-  '@next/env@15.1.5':
-    resolution: {integrity: sha512-jg8ygVq99W3/XXb9Y6UQsritwhjc+qeiO7QrGZRYOfviyr/HcdnhdBQu4gbp2rBIh2ZyBYTBMWbPw3JSCb0GHw==}
 
   '@next/eslint-plugin-next@14.2.23':
     resolution: {integrity: sha512-efRC7m39GoiU1fXZRgGySqYbQi6ZyLkuGlvGst7IwkTTczehQTJA/7PoMg4MMjUZvZEGpiSEu+oJBAjPawiC3Q==}
@@ -10243,8 +10237,6 @@ snapshots:
       urlpattern-polyfill: 8.0.2
 
   '@next/env@14.2.23': {}
-
-  '@next/env@15.1.5': {}
 
   '@next/eslint-plugin-next@14.2.23':
     dependencies:

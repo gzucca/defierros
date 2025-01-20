@@ -53,7 +53,9 @@
     "AUTH_SECRET",
     "PORT",
     "DATABASE_URL",
-    "DATABASE_URL_POOLER"
+    "DATABASE_URL_POOLER",
+    "NEXT_PUBLIC_DEBUG",
+    "NEXT_DEBUG"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",
