@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "pnpm with-env next build",
+    "prebuild": "echo \"running prebuild...\" && tsx src/scripts/prebuild.ts",
+    "build": "pnpm with-env pnpm run prebuild && pnpm with-env next build",
     "clean": "git clean -xdf .cache .next .turbo node_modules",
     "dev": "pnpm with-env next dev",
     "format": "prettier --check . --ignore-path ../../.gitignore",
@@ -18,6 +19,7 @@
     "@defierros/api": "workspace:*",
     "@defierros/auth": "workspace:*",
     "@defierros/db": "workspace:*",
+    "@defierros/env": "workspace:*",
     "@defierros/ui": "workspace:*",
     "@defierros/validators": "workspace:*",
     "@t3-oss/env-nextjs": "^0.11.1",

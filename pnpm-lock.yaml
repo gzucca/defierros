@@ -239,6 +239,9 @@ importers:
       '@defierros/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@defierros/env':
+        specifier: workspace:*
+        version: link:../../packages/env
       '@defierros/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -438,6 +441,34 @@ importers:
       drizzle-kit:
         specifier: ^0.30.2
         version: 0.30.2
+      eslint:
+        specifier: 'catalog:'
+        version: 9.18.0(jiti@2.4.2)
+      prettier:
+        specifier: 'catalog:'
+        version: 3.4.2
+      typescript:
+        specifier: 'catalog:'
+        version: 5.7.3
+
+  packages/env:
+    dependencies:
+      '@t3-oss/env-nextjs':
+        specifier: ^0.11.1
+        version: 0.11.1(typescript@5.7.3)(zod@3.24.1)
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
+    devDependencies:
+      '@defierros/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint
+      '@defierros/prettier-config':
+        specifier: workspace:*
+        version: link:../../tooling/prettier
+      '@defierros/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
       eslint:
         specifier: 'catalog:'
         version: 9.18.0(jiti@2.4.2)
