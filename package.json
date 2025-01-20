@@ -1,34 +1,38 @@
 {
   "name": "create-t3-turbo",
   "private": true,
-  "engines": {
-    "node": ">=20.18.1",
-    "pnpm": "^9.14.2"
-  },
-  "packageManager": "pnpm@9.14.2",
   "scripts": {
     "build": "turbo run build",
-    "clean": "git clean -xdf node_modules",
+    "clean": "pnpm run clean:node_modules && pnpm run clean:package-lock && pnpm run clean:pnpm-lock",
+    "clean:node_modules": "find . -name 'node_modules' -type d -prune -print -exec rm -rf '{}' +",
+    "clean:package-lock": "find . -type f -name package-lock.json -exec rm {} +",
+    "clean:pnpm-lock": "find . -type f -name pnpm-lock.yaml -exec rm {} +",
     "clean:workspaces": "turbo run clean",
-    "db:push": "turbo -F @acme/db push",
-    "db:studio": "turbo -F @acme/db studio",
+    "db:push": "turbo -F @defierros/db push",
+    "db:studio": "turbo -F @defierros/db studio",
     "dev": "turbo watch dev --continue",
-    "dev:next": "turbo watch dev -F @acme/nextjs...",
+    "dev:next": "turbo watch dev -F @defierros/nextjs...",
     "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
     "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
+    "postinstall": "pnpm lint:ws",
     "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
     "lint:ws": "pnpm dlx sherif@latest",
-    "postinstall": "pnpm lint:ws",
+    "sort-package-json": "find . -name \"package.json\" -type f -not -path \"*/node_modules/*\" -print0 | xargs -0 npx sort-package-json",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add"
   },
+  "prettier": "@defierros/prettier-config",
   "devDependencies": {
-    "@acme/prettier-config": "workspace:*",
+    "@defierros/prettier-config": "workspace:*",
     "@turbo/gen": "^2.3.3",
     "prettier": "catalog:",
     "turbo": "^2.3.3",
     "typescript": "catalog:"
   },
-  "prettier": "@acme/prettier-config"
+  "packageManager": "pnpm@9.14.2",
+  "engines": {
+    "node": ">=20.18.1",
+    "pnpm": "^9.14.2"
+  }
 }

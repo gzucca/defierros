@@ -51,7 +51,9 @@
     "AUTH_DISCORD_SECRET",
     "AUTH_REDIRECT_PROXY_URL",
     "AUTH_SECRET",
-    "PORT"
+    "PORT",
+    "DATABASE_URL",
+    "DATABASE_URL_POOLER"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",

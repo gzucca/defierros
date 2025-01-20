@@ -2,7 +2,7 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import { vercel } from "@t3-oss/env-nextjs/presets";
 import { z } from "zod";
 
-import { env as authEnv } from "@acme/auth/env";
+import { env as authEnv } from "@defierros/auth/env";
 
 export const env = createEnv({
   extends: [authEnv, vercel()],
@@ -17,6 +17,8 @@ export const env = createEnv({
    */
   server: {
     POSTGRES_URL: z.string().url(),
+    DATABASE_URL: z.string().url(),
+    DATABASE_URL_POOLER: z.string().url(),
   },
 
   /**
@@ -31,7 +33,6 @@ export const env = createEnv({
    */
   experimental__runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
-
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   skipValidation:

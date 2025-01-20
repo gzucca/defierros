@@ -1,7 +1,8 @@
 {
-  "name": "@acme/ui",
-  "private": true,
+  "name": "@defierros/ui",
   "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
   "type": "module",
   "exports": {
     ".": {
@@ -16,7 +17,6 @@
       ]
     }
   },
-  "license": "MIT",
   "scripts": {
     "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
@@ -26,6 +26,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "ui-add": "pnpm dlx shadcn@latest add && prettier src --write --list-different"
   },
+  "prettier": "@defierros/prettier-config",
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
@@ -39,10 +40,10 @@
     "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:*",
-    "@acme/prettier-config": "workspace:*",
-    "@acme/tailwind-config": "workspace:*",
-    "@acme/tsconfig": "workspace:*",
+    "@defierros/eslint-config": "workspace:*",
+    "@defierros/prettier-config": "workspace:*",
+    "@defierros/tailwind-config": "workspace:*",
+    "@defierros/tsconfig": "workspace:*",
     "@types/react": "catalog:react18",
     "eslint": "catalog:",
     "prettier": "catalog:",
@@ -53,6 +54,5 @@
   "peerDependencies": {
     "react": "catalog:react18",
     "zod": "catalog:"
-  },
-  "prettier": "@acme/prettier-config"
+  }
 }

@@ -1,19 +1,20 @@
 {
-  "name": "@acme/expo",
+  "name": "@defierros/expo",
   "version": "0.1.0",
   "private": true,
   "main": "index.ts",
   "scripts": {
+    "android": "expo run:android",
     "clean": "git clean -xdf .cache .expo .turbo android ios node_modules",
     "dev": "expo start",
     "dev:android": "expo start --android",
     "dev:ios": "expo start --ios",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
     "format": "prettier --check . --ignore-path ../../.gitignore",
+    "ios": "expo run:ios",
     "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },
+  "prettier": "@defierros/prettier-config",
   "dependencies": {
     "@bacons/text-decoder": "^0.0.0",
     "@expo/metro-config": "^0.18.11",
@@ -43,20 +44,19 @@
     "superjson": "2.2.1"
   },
   "devDependencies": {
-    "@acme/api": "workspace:*",
-    "@acme/eslint-config": "workspace:*",
-    "@acme/prettier-config": "workspace:*",
-    "@acme/tailwind-config": "workspace:*",
-    "@acme/tsconfig": "workspace:*",
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/runtime": "^7.26.0",
+    "@defierros/api": "workspace:*",
+    "@defierros/eslint-config": "workspace:*",
+    "@defierros/prettier-config": "workspace:*",
+    "@defierros/tailwind-config": "workspace:*",
+    "@defierros/tsconfig": "workspace:*",
     "@types/babel__core": "^7.20.5",
     "@types/react": "catalog:react18",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:"
-  },
-  "prettier": "@acme/prettier-config"
+  }
 }

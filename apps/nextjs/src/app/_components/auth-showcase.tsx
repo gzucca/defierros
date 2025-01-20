@@ -1,5 +1,5 @@
-import { auth, signIn, signOut } from "@acme/auth";
-import { Button } from "@acme/ui/button";
+import { auth, signIn, signOut } from "@defierros/auth";
+import { Button } from "@defierros/ui/button";
 
 export async function AuthShowcase() {
   const session = await auth();

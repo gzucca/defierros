@@ -1,7 +1,7 @@
 {
-  "name": "@acme/prettier-config",
-  "private": true,
+  "name": "@defierros/prettier-config",
   "version": "0.1.0",
+  "private": true,
   "type": "module",
   "exports": {
     ".": "./index.js"
@@ -11,14 +11,14 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit"
   },
+  "prettier": "@defierros/prettier-config",
   "dependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
     "prettier": "catalog:",
     "prettier-plugin-tailwindcss": "^0.6.9"
   },
   "devDependencies": {
-    "@acme/tsconfig": "workspace:*",
+    "@defierros/tsconfig": "workspace:*",
     "typescript": "catalog:"
-  },
-  "prettier": "@acme/prettier-config"
+  }
 }

@@ -1,7 +1,7 @@
 {
-  "name": "@acme/eslint-config",
-  "private": true,
+  "name": "@defierros/eslint-config",
   "version": "0.3.0",
+  "private": true,
   "type": "module",
   "exports": {
     "./base": "./base.js",
@@ -13,6 +13,7 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit"
   },
+  "prettier": "@defierros/prettier-config",
   "dependencies": {
     "@eslint/compat": "^1.2.3",
     "@next/eslint-plugin-next": "^14.2.15",
@@ -24,12 +25,11 @@
     "typescript-eslint": "^8.15.0"
   },
   "devDependencies": {
-    "@acme/prettier-config": "workspace:*",
-    "@acme/tsconfig": "workspace:*",
+    "@defierros/prettier-config": "workspace:*",
+    "@defierros/tsconfig": "workspace:*",
     "@types/eslint__js": "8.42.3",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
-  },
-  "prettier": "@acme/prettier-config"
+  }
 }
