@@ -47,6 +47,7 @@
     "jiti": "^1.21.6",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
+    "tsx": "^4.19.2",
     "typescript": "catalog:"
   }
 }
