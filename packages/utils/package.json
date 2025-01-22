@@ -1,0 +1,32 @@
+{
+  "name": "@defierros/utils",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "devDependencies": {
+    "@defierros/eslint-config": "workspace:*",
+    "@defierros/prettier-config": "workspace:*",
+    "@defierros/tsconfig": "workspace:*",
+    "@types/lodash": "^4.17.14",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@defierros/prettier-config",
+  "dependencies": {
+    "@defierros/types": "workspace:*",
+    "lodash": "^4.17.21"
+  }
+}
