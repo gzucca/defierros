@@ -1,5 +1,6 @@
 {
   "extends": "@defierros/tsconfig/base.json",
-  "include": ["."],
+  "include": [".", "eslint-config.d.ts"],
   "exclude": ["node_modules"]
+  
 }

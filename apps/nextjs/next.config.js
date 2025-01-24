@@ -11,7 +11,6 @@ const config = {
   /** Enables hot reloading for local packages without a build step */
   transpilePackages: [
     "@defierros/api",
-    "@defierros/auth",
     "@defierros/db",
     "@defierros/ui",
     "@defierros/validators",

@@ -20,10 +20,11 @@
   },
   "prettier": "@defierros/prettier-config",
   "dependencies": {
-    "@defierros/auth": "workspace:*",
+    "@clerk/nextjs": "^6.10.2",
     "@defierros/db": "workspace:*",
     "@defierros/validators": "workspace:*",
     "@trpc/server": "catalog:",
+    "next": "^14.2.15",
     "superjson": "2.2.1",
     "zod": "catalog:"
   },

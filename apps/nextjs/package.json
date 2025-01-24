@@ -16,8 +16,8 @@
   },
   "prettier": "@defierros/prettier-config",
   "dependencies": {
+    "@clerk/nextjs": "^6.10.2",
     "@defierros/api": "workspace:*",
-    "@defierros/auth": "workspace:*",
     "@defierros/db": "workspace:*",
     "@defierros/env": "workspace:*",
     "@defierros/ui": "workspace:*",

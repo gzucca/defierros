@@ -1,19 +1,20 @@
-import { Suspense } from "react";
+// import { Suspense } from "react";
 
-import { api, HydrateClient } from "~/trpc/server";
+import { HydrateClient } from "~/trpc/server";
+
 // import { AuthShowcase } from "./_components/auth-showcase";
-import {
-  CreatePostForm,
-  PostCardSkeleton,
-  PostList,
-} from "./_components/posts";
+// import {
+//   CreatePostForm,
+//   PostCardSkeleton,
+//   PostList,
+// } from "./_components/posts";
 
 //THIS IS BECAUSE OF AUTHSHOWCASE
 // export const dynamic = 'force-dynamic';
 
 export default function HomePage() {
   // You can await this here if you don't want to show Suspense fallback below
-  void api.post.all.prefetch();
+  // void api.post.all.prefetch();
 
   return (
     // <HydrateClient>
@@ -41,29 +42,22 @@ export default function HomePage() {
     //     </div>
     //   </main>
     // </HydrateClient>
-        <HydrateClient>
-      <main className=" mx-auto min-h-[70vh] max-w-[1400px] ">
-      <h1 className="absolute h-[1px] w-[1px] overflow-hidden border-0 p-0 clip-path-inset ">
-        Clasificados y subastas
-      </h1>
+    <HydrateClient>
+      <main className="mx-auto bg-white text-black min-h-[70vh] max-w-[1400px]">
+        <h1 className="clip-path-inset absolute h-[1px] w-[1px] overflow-hidden border-0 p-0">
+          Clasificados y subastas
+        </h1>
 
+        <p>This is a test</p>
 
-    
-
-    
         <>
           <section className="flex min-h-[50vh] justify-center lg:grid lg:grid-cols-[80fr,_20fr] lg:gap-4">
-            <div
-              className=" grid h-fit w-fit grid-cols-1 place-items-start justify-items-center gap-4 p-0 md:grid-cols-2 md:gap-y-8 lg:w-full xl:grid-cols-3 "
-            >
-              {renderCars([...adminAuctions, ...posts])}
+            <div className="grid h-fit w-fit grid-cols-1 place-items-start justify-items-center gap-4 p-0 md:grid-cols-2 md:gap-y-8 lg:w-full xl:grid-cols-3">
+              {/* {renderCars([...adminAuctions, ...posts])} */}
             </div>
-
-
           </section>
-
         </>
-    </main>
-      </HydrateClient>
+      </main>
+    </HydrateClient>
   );
 }
