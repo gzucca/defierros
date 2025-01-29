@@ -1,22 +1,24 @@
-import { use, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { FiClock } from "react-icons/fi";
-import { MdDelete, MdBrush } from "react-icons/md";
-import { deleteCarDetail } from "@/redux/carDetail/carDetailSlice";
-import Modal from "../common/Modal";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import featuresArrayToText from "@/helpers/featuresArrayToText";
-import CountDownTimer from "./CountDownTimer";
-import { FaStar } from "react-icons/fa";
-import { updateFavorite } from "@/redux/user/userSlice";
-import { updateSale } from "@/redux/sale/saleSlice";
 import CarDetailForm from "@/components/dashboard/CarDetailForm";
+import featuresArrayToText from "@/helpers/featuresArrayToText";
+import { updateSale } from "@/redux/sale/saleSlice";
+import { updateFavorite } from "@/redux/user/userSlice";
+import { FaStar } from "react-icons/fa";
+import { FiClock } from "react-icons/fi";
+import { MdBrush, MdDelete } from "react-icons/md";
+
+import type { Types } from "@defierros/types";
+
 import AuctionRibbonSVG from "../../public/AuctionRibbon.svg";
+// import { deleteCarDetail } from "@/redux/carDetail/carDetailSlice";
+import Modal from "../common/Modal";
+import CountDownTimer from "./CountDownTimer";
 
 const handleUpdate = () => {};
 
-const AutoCard = ({
+export const AutoCard = ({
   car,
   auctionId = "",
   saleId = "",
@@ -30,13 +32,27 @@ const AutoCard = ({
   userFavorites = [],
   sold,
   cardType,
+}: {
+  car: Types.CarsSelectType;
+  auctionId: string;
+  saleId: string;
+  bids: Types.BidsSelectType[];
+  adminView: boolean;
+  userView: boolean;
+  isSeller: boolean;
+  users: Types.UsersSelectType[];
+  userId: string;
+  userEmail: string;
+  userFavorites: string[];
+  sold: boolean;
+  cardType: string;
 }) => {
   const { endTime, startingPrice } = car;
 
   const postId = auctionId || saleId;
 
   const [currentBid, setCurrentBid] = useState(0);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const handleUpdateFavorites = async (postId) => {
     await dispatch(updateFavorite({ userId: userId, postId: postId }));
@@ -53,15 +69,15 @@ const AutoCard = ({
   const [modals, setModals] = useState({
     delete: {
       inView: false,
-      onConfirm: async function ({ car }) {
-        const response = dispatch(
-          deleteCarDetail({
-            carDetailId: car.id,
-          })
-        );
-        if (response) {
-          location.reload();
-        }
+      onConfirm: async function ({ car }: { car: Types.CarsSelectType }) {
+        // const response = dispatch(
+        //   deleteCarDetail({
+        //     carDetailId: car.id,
+        //   })
+        // );
+        // if (response) {
+        //   location.reload();
+        // }
       },
     },
     updateSold: {
@@ -94,8 +110,8 @@ const AutoCard = ({
   switch (cardType) {
     case "admin_or_user_post":
       return (
-        <article className="group relative w-full ">
-          <SoldButton
+        <article className="group relative w-full">
+          {/* <SoldButton
             userEmail={userEmail}
             userView={userView}
             isSeller={isSeller}
@@ -118,7 +134,7 @@ const AutoCard = ({
             postId={postId}
             handleUpdateFavorites={handleUpdateFavorites}
             userFavorites={userFavorites}
-          />
+          /> */}
 
           <Link className="mx-auto" href={postLink()}>
             <CarDetail
@@ -140,13 +156,13 @@ const AutoCard = ({
       break;
     case "public_post":
       return (
-        <article className="group relative w-full  ">
-          <FavoritesButton
+        <article className="group relative w-full">
+          {/* <FavoritesButton
             userId={userId}
             postId={postId}
             handleUpdateFavorites={handleUpdateFavorites}
             userFavorites={userFavorites}
-          />
+          /> */}
           {!!auctionId && <AuctionRibbon />}
           <Link className="mx-auto" href={postLink()}>
             <CarDetail
@@ -166,7 +182,7 @@ const AutoCard = ({
       break;
     default:
       return (
-        <article className="group relative  w-full ">
+        <article className="group relative w-full">
           <AdminButtons
             users={users}
             modals={modals}
@@ -174,7 +190,7 @@ const AutoCard = ({
             adminView={adminView}
             handleViewModal={handleViewModal}
           />
-          <div className=" cursor-default">
+          <div className="cursor-default">
             <CarDetail
               auctionId={auctionId}
               saleId={saleId}
@@ -223,13 +239,13 @@ const CarDetail = ({ auctionId, saleId, sold, currentBid, car }) => {
   };
 
   return (
-    <div className="relative flex ">
+    <div className="relative flex">
       <div
-        className={`group aspect-video h-80 flex-grow overflow-hidden rounded-md shadow-md md:w-[22rem] md:max-w-none lg:w-[22rem] xl:w-[20rem] 2xl:w-[22rem] ${
+        className={`group aspect-video h-80 grow overflow-hidden rounded-md shadow-md md:w-[22rem] md:max-w-none lg:w-[22rem] xl:w-[20rem] 2xl:w-[22rem] ${
           auctionId || saleId
             ? "bg-gray-100 hover:bg-gray-200"
             : "bg-red-50 hover:bg-red-100"
-        } transition-all duration-150 `}
+        } transition-all duration-150`}
       >
         <div className="relative h-[60%] max-w-full overflow-hidden">
           <div className="flex h-full items-center">
@@ -239,18 +255,18 @@ const CarDetail = ({ auctionId, saleId, sold, currentBid, car }) => {
               sizes="(max-width: 768px) 70vw, (max-width: 1280px) 35vw, 30vw"
               src={images[0]}
               alt={brand + model + "-image"}
-              className={` h-full w-full ${
+              className={`h-full w-full ${
                 checkNotFinished(endTime, sold) ? "" : "grayscale"
-              } object-cover `}
+              } object-cover`}
               priority={true}
             />
           </div>
 
           {saleId && (
             <div
-              className={`absolute bottom-1  flex w-full items-end justify-end`}
+              className={`absolute bottom-1 flex w-full items-end justify-end`}
             >
-              <div className={` me-2 rounded-md bg-zinc-800 px-2 py-1 text-sm`}>
+              <div className={`me-2 rounded-md bg-zinc-800 px-2 py-1 text-sm`}>
                 <li className="flex items-center font-semibold text-white">
                   <p className="me-1 text-gray-500">
                     {sold && "Vendido - "}Clasificado
@@ -262,13 +278,13 @@ const CarDetail = ({ auctionId, saleId, sold, currentBid, car }) => {
           )}
 
           {auctionId && (
-            <div className=" absolute bottom-1 flex w-full items-end justify-end text-sm">
+            <div className="absolute bottom-1 flex w-full items-end justify-end text-sm">
               <ul
-                className={` grid ${
-                  checkNotFinished(endTime, sold) && "grid-cols-[0.4fr,_0.6fr]"
-                }  me-2 w-auto min-w-[200px] gap-x-2 rounded-md bg-zinc-800 px-2 py-1 `}
+                className={`grid ${
+                  checkNotFinished(endTime, sold) && "grid-cols-[0.4fr__0.6fr]"
+                } me-2 w-auto min-w-[200px] gap-x-2 rounded-md bg-zinc-800 px-2 py-1`}
               >
-                <li className="flex w-full items-center justify-start  gap-1 whitespace-nowrap font-semibold text-white">
+                <li className="flex w-full items-center justify-start gap-1 font-semibold whitespace-nowrap text-white">
                   <FiClock className="text-gray-500" />
 
                   <CountDownTimer endDate={endTime} />
@@ -289,19 +305,17 @@ const CarDetail = ({ auctionId, saleId, sold, currentBid, car }) => {
           )}
         </div>
         <div className="flex h-[40%] max-w-full flex-col p-2">
-          <div className=" flex items-center justify-between">
-            <h2 className=" w-[30ch] items-center gap-2 truncate font-oswaldFamily text-xl font-bold md:w-[32ch] xl:w-[25ch] 2xl:w-[28ch]">
+          <div className="flex items-center justify-between">
+            <h2 className="font-oswaldFamily w-[30ch] items-center gap-2 truncate text-xl font-bold md:w-[32ch] xl:w-[25ch] 2xl:w-[28ch]">
               {brand + " "}
               {model + " "}
               {year}
             </h2>
           </div>
 
-          <div className="flex h-full w-full  flex-col">
-            <div className="w-full grow text-sm ">
-              <p className=" line-clamp-2  ">
-                {featuresArrayToText(highlights)}
-              </p>
+          <div className="flex h-full w-full flex-col">
+            <div className="w-full grow text-sm">
+              <p className="line-clamp-2">{featuresArrayToText(highlights)}</p>
             </div>
             <div>
               <p className="text-sm text-gray-400">{kilometers}km</p>
@@ -326,14 +340,14 @@ const FavoritesButton = ({
     return (
       <button
         onClick={() => handleUpdateFavorites(postId)}
-        className="absolute bottom-[29.5%] right-4 z-10 md:bottom-[30.5%]  "
+        className="absolute right-4 bottom-[29.5%] z-10 md:bottom-[30.5%]"
       >
         <FaStar
-          className={` text-xl ${
+          className={`text-xl ${
             userFavorites.includes(postId)
               ? "text-black"
               : "text-gray-400 hover:text-gray-500"
-          }  `}
+          } `}
         />
       </button>
     );
@@ -342,7 +356,7 @@ const FavoritesButton = ({
 
 const AuctionRibbon = () => {
   return (
-    <div className="absolute left-0 top-0 z-10 md:bottom-[30.5%]">
+    <div className="absolute top-0 left-0 z-10 md:bottom-[30.5%]">
       <Image src={AuctionRibbonSVG} alt="auction" width={75} height={75} />
     </div>
   );
@@ -382,7 +396,7 @@ const AdminButtons = ({ adminView, handleViewModal, car, modals, users }) => {
           )}
         </Modal>
 
-        <ul className="absolute right-0 top-0  z-10 m-2 flex scale-0 items-center gap-2 text-lg text-white transition-all duration-300 group-hover:scale-100">
+        <ul className="absolute top-0 right-0 z-10 m-2 flex scale-0 items-center gap-2 text-lg text-white transition-all duration-300 group-hover:scale-100">
           <li>
             <button
               className="rounded-md border-2 border-red-500 p-1 text-red-500 transition-all duration-300 hover:bg-red-500 hover:text-white"
@@ -432,7 +446,7 @@ const SoldButton = ({
           </p>
         </Modal>
 
-        <ul className="absolute right-0 top-0 z-10 m-2  flex scale-0 items-center gap-2 text-lg text-white transition-all duration-300 group-hover:scale-100">
+        <ul className="absolute top-0 right-0 z-10 m-2 flex scale-0 items-center gap-2 text-lg text-white transition-all duration-300 group-hover:scale-100">
           <li>
             <button
               className="rounded-md border-2 border-red-500 p-1 text-red-500 transition-all duration-300 hover:bg-red-500 hover:text-white"

@@ -13,4 +13,4 @@ export type PaymentsInsertType = typeof schema.Payments.$inferInsert;
 export type CarsSelectType = typeof schema.Cars.$inferSelect;
 export type CarsInsertType = typeof schema.Cars.$inferInsert;
 export type BidsSelectType = typeof schema.Bids.$inferSelect;
-export type BidsInsertType = typeof schema.Bids.$inferInsert;
+export type BidsInsertType = typeof schema.Bids.$inferInsert; 

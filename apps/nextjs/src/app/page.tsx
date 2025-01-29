@@ -51,7 +51,7 @@ export default function HomePage() {
         <p>This is a test</p>
 
         <>
-          <section className="flex min-h-[50vh] justify-center lg:grid lg:grid-cols-[80fr,_20fr] lg:gap-4">
+          <section className="flex min-h-[50vh] justify-center lg:grid lg:grid-cols-[80fr__20fr] lg:gap-4">
             <div className="grid h-fit w-fit grid-cols-1 place-items-start justify-items-center gap-4 p-0 md:grid-cols-2 md:gap-y-8 lg:w-full xl:grid-cols-3">
               {/* {renderCars([...adminAuctions, ...posts])} */}
             </div>

@@ -27,7 +27,7 @@ const SideBar = ({ carLines, cardRef }) => {
           ref={cardRef}
           className=" mb-6 aspect-video h-36 w-full overflow-hidden rounded-md  bg-gray-200 "
         >
-          <div className="grid h-2/3 animate-pulse grid-cols-[70fr,_30fr] gap-1">
+          <div className="grid h-2/3 animate-pulse grid-cols-[70fr__30fr] gap-1">
             <div className="h-full w-full bg-gray-50"></div>
             <div className="grid  h-full grid-rows-2  gap-1 overflow-hidden ">
               <div className="bg-gray-50"></div>
@@ -50,7 +50,7 @@ const SideBar = ({ carLines, cardRef }) => {
               className=" mb-6 aspect-video h-36 w-full overflow-hidden  rounded-md bg-gray-50  "
               key={"sideBar" + model + id}
             >
-              <div className="grid h-2/3 grid-cols-[70fr,_30fr] gap-1">
+              <div className="grid h-2/3 grid-cols-[70fr__30fr] gap-1">
                 <Image
                   key={images[0] + "key"}
                   width={200}
