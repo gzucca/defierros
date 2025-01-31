@@ -1,37 +1,41 @@
-import { useEffect, useState } from "react";
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import CarDetailForm from "@/components/dashboard/CarDetailForm";
-import featuresArrayToText from "@/helpers/featuresArrayToText";
-import { updateSale } from "@/redux/sale/saleSlice";
-import { updateFavorite } from "@/redux/user/userSlice";
+import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { FiClock } from "react-icons/fi";
 import { MdBrush, MdDelete } from "react-icons/md";
 
 import type { Types } from "@defierros/types";
 
-import AuctionRibbonSVG from "../../public/AuctionRibbon.svg";
-// import { deleteCarDetail } from "@/redux/carDetail/carDetailSlice";
-import Modal from "../common/Modal";
-import CountDownTimer from "./CountDownTimer";
+// import CarDetailForm from "@/components/dashboard/CarDetailForm";
 
-const handleUpdate = () => {};
+import CountdownTimer from "./CountdownTimer";
+import Modal from "./Modal";
+
+interface ModalState<T> {
+  inView: boolean;
+  onConfirm: (params: T) => Promise<void>;
+}
 
 export const AutoCard = ({
   car,
-  auctionId = "",
-  saleId = "",
+  auctionId,
+  saleId,
   bids = [],
   adminView = false,
   userView = false,
   isSeller = false,
   users = [],
-  userId = "",
-  userEmail = "",
+  userId,
+  // userEmail,
   userFavorites = [],
   sold,
   cardType,
+  onUpdateFavorite,
+  onDeleteCar,
+  onUpdateSold,
 }: {
   car: Types.CarsSelectType;
   auctionId: string;
@@ -42,10 +46,27 @@ export const AutoCard = ({
   isSeller: boolean;
   users: Types.UsersSelectType[];
   userId: string;
-  userEmail: string;
+  // userEmail: string;
   userFavorites: string[];
   sold: boolean;
   cardType: string;
+  onUpdateFavorite: ({
+    userId,
+    postId,
+  }: {
+    userId: string;
+    postId: string;
+  }) => Promise<void>;
+  onDeleteCar: ({ carId }: { carId: string }) => Promise<void>;
+  onUpdateSold: ({
+    userEmail,
+    saleId,
+    sold,
+  }: {
+    userEmail: string;
+    saleId: string;
+    sold: boolean;
+  }) => Promise<void>;
 }) => {
   const { endTime, startingPrice } = car;
 
@@ -54,42 +75,44 @@ export const AutoCard = ({
   const [currentBid, setCurrentBid] = useState(0);
   // const dispatch = useDispatch();
 
-  const handleUpdateFavorites = async (postId) => {
-    await dispatch(updateFavorite({ userId: userId, postId: postId }));
+  const handleUpdateFavorites = async (postId: string) => {
+    await onUpdateFavorite({ userId: userId, postId: postId });
   };
 
   useEffect(() => {
-    if (bids?.length > 0) {
-      setCurrentBid(bids[bids.length - 1].ammount);
+    if (bids.length > 0) {
+      setCurrentBid(bids[bids.length - 1]?.ammount ?? 0);
     } else {
-      setCurrentBid(startingPrice);
+      setCurrentBid(startingPrice ?? 0);
     }
   }, [bids, startingPrice]);
 
-  const [modals, setModals] = useState({
+  const [modals, setModals] = useState<{
+    delete: ModalState<{ car: Types.CarsSelectType }>;
+    updateSold: ModalState<{
+      userEmail: string;
+      saleId: string;
+      sold: boolean;
+    }>;
+    // Add other modals here if needed
+  }>({
     delete: {
       inView: false,
-      onConfirm: async function ({ car }: { car: Types.CarsSelectType }) {
-        // const response = dispatch(
-        //   deleteCarDetail({
-        //     carDetailId: car.id,
-        //   })
-        // );
-        // if (response) {
-        //   location.reload();
-        // }
+      onConfirm: async ({ car }) => {
+        await onDeleteCar({ carId: car.id });
+        location.reload();
       },
     },
     updateSold: {
       inView: false,
-      onConfirm: async function ({ userEmail, saleId }) {
-        dispatch(updateSale({ sold: true, saleId, userEmail }));
+      onConfirm: async ({ userEmail, saleId, sold }) => {
+        await onUpdateSold({ sold, saleId, userEmail });
       },
     },
-    update: { inView: false, onConfirm: handleUpdate },
+    // update: { inView: false, onConfirm: handleUpdate },
   });
 
-  const handleViewModal = (modal) => {
+  const handleViewModal = (modal: keyof typeof modals): void => {
     setModals({
       ...modals,
       [modal]: { ...modals[modal], inView: !modals[modal].inView },
@@ -98,11 +121,12 @@ export const AutoCard = ({
 
   const postLink = () => {
     if (auctionId) {
-      return `/auctions/${auctionId}`;
+      return `/auctions/${auctionId}` as const;
     }
     if (saleId) {
-      return `/sales/${saleId}`;
+      return `/sales/${saleId}` as const;
     }
+    return "/" as const;
   };
 
   if (!car.images) <></>;
@@ -128,13 +152,13 @@ export const AutoCard = ({
             adminView={adminView}
             handleViewModal={handleViewModal}
           />
-
+*/}
           <FavoritesButton
             userId={userId}
             postId={postId}
             handleUpdateFavorites={handleUpdateFavorites}
             userFavorites={userFavorites}
-          /> */}
+          />
 
           <Link className="mx-auto" href={postLink()}>
             <CarDetail
@@ -149,6 +173,7 @@ export const AutoCard = ({
               userView={userView}
               isSeller={isSeller}
               car={car}
+              endTime={endTime}
             />
           </Link>
         </article>
@@ -208,7 +233,43 @@ export const AutoCard = ({
   }
 };
 
-const CarDetail = ({ auctionId, saleId, sold, currentBid, car }) => {
+interface CarDetailProps {
+  auctionId?: string;
+  saleId?: string;
+  userFavorites?: string[];
+  userId?: string;
+  postId?: string;
+  endTime?: Date | null;
+  sold: boolean;
+  currentBid: number;
+  adminView?: boolean;
+  userView?: boolean;
+  isSeller?: boolean;
+  car: Types.CarsSelectType;
+}
+
+const checkNotFinished = (endTime: Date | null, sold: boolean): boolean => {
+  if (!endTime) return false;
+
+  if (new Date().toISOString() < endTime.toISOString() && sold === true) {
+    return false;
+  }
+
+  if (new Date().toISOString() > endTime.toISOString()) {
+    return false;
+  }
+
+  return true;
+};
+
+const CarDetail = ({
+  auctionId,
+  saleId,
+  sold,
+  currentBid,
+  car,
+  endTime,
+}: CarDetailProps) => {
   const {
     brand,
     model,
@@ -216,27 +277,12 @@ const CarDetail = ({ auctionId, saleId, sold, currentBid, car }) => {
     highlights,
     kilometers,
     minPrice,
-    endTime,
     images,
     city,
     province,
   } = car;
 
-  const checkNotFinished = (endTime, sold) => {
-    // if (new Date().toISOString() < endTime && sold === false) {
-    //   return true;
-    // }
-
-    if (new Date().toISOString() < endTime && sold === true) {
-      return false;
-    }
-
-    if (new Date().toISOString() > endTime) {
-      return false;
-    }
-
-    return true;
-  };
+  const mainImage = images && images.length > 0 ? images[0] : null;
 
   return (
     <div className="relative flex">
@@ -249,29 +295,31 @@ const CarDetail = ({ auctionId, saleId, sold, currentBid, car }) => {
       >
         <div className="relative h-[60%] max-w-full overflow-hidden">
           <div className="flex h-full items-center">
-            <Image
-              width={350}
-              height={200}
-              sizes="(max-width: 768px) 70vw, (max-width: 1280px) 35vw, 30vw"
-              src={images[0]}
-              alt={brand + model + "-image"}
-              className={`h-full w-full ${
-                checkNotFinished(endTime, sold) ? "" : "grayscale"
-              } object-cover`}
-              priority={true}
-            />
+            {images && mainImage ? (
+              <Image
+                width={350}
+                height={200}
+                sizes="(max-width: 768px) 70vw, (max-width: 1280px) 35vw, 30vw"
+                src={mainImage}
+                alt={`${brand} ${model}-image`}
+                className={`h-full w-full ${
+                  checkNotFinished(endTime ?? null, sold) ? "" : "grayscale"
+                } object-cover`}
+                priority={true}
+              />
+            ) : (
+              <div className="h-full w-full bg-gray-200" />
+            )}
           </div>
 
           {saleId && (
-            <div
-              className={`absolute bottom-1 flex w-full items-end justify-end`}
-            >
-              <div className={`me-2 rounded-md bg-zinc-800 px-2 py-1 text-sm`}>
+            <div className="absolute bottom-1 flex w-full items-end justify-end">
+              <div className="me-2 rounded-md bg-zinc-800 px-2 py-1 text-sm">
                 <li className="flex items-center font-semibold text-white">
                   <p className="me-1 text-gray-500">
                     {sold && "Vendido - "}Clasificado
                   </p>
-                  U${Intl.NumberFormat("en-US").format(minPrice)}
+                  U${Intl.NumberFormat("en-US").format(minPrice ?? 0)}
                 </li>
               </div>
             </div>
@@ -281,22 +329,22 @@ const CarDetail = ({ auctionId, saleId, sold, currentBid, car }) => {
             <div className="absolute bottom-1 flex w-full items-end justify-end text-sm">
               <ul
                 className={`grid ${
-                  checkNotFinished(endTime, sold) && "grid-cols-[0.4fr__0.6fr]"
+                  checkNotFinished(endTime ?? null, sold) &&
+                  "grid-cols-[0.4fr__0.6fr]"
                 } me-2 w-auto min-w-[200px] gap-x-2 rounded-md bg-zinc-800 px-2 py-1`}
               >
                 <li className="flex w-full items-center justify-start gap-1 font-semibold whitespace-nowrap text-white">
                   <FiClock className="text-gray-500" />
-
-                  <CountDownTimer endDate={endTime} />
+                  <CountdownTimer endDate={endTime ?? new Date()} />
                 </li>
-                {checkNotFinished(endTime, sold) && (
+                {checkNotFinished(endTime ?? null, sold) && (
                   <li className="flex w-full items-center justify-start gap-1 font-semibold text-white">
                     <p className="text-gray-500">Oferta</p>
                     <p>
                       U$
                       {currentBid
                         ? Intl.NumberFormat("en-US").format(currentBid)
-                        : Intl.NumberFormat("en-US").format(minPrice)}
+                        : Intl.NumberFormat("en-US").format(minPrice ?? 0)}
                     </p>
                   </li>
                 )}
@@ -307,15 +355,13 @@ const CarDetail = ({ auctionId, saleId, sold, currentBid, car }) => {
         <div className="flex h-[40%] max-w-full flex-col p-2">
           <div className="flex items-center justify-between">
             <h2 className="font-oswaldFamily w-[30ch] items-center gap-2 truncate text-xl font-bold md:w-[32ch] xl:w-[25ch] 2xl:w-[28ch]">
-              {brand + " "}
-              {model + " "}
-              {year}
+              {brand} {model} {year}
             </h2>
           </div>
 
           <div className="flex h-full w-full flex-col">
             <div className="w-full grow text-sm">
-              <p className="line-clamp-2">{featuresArrayToText(highlights)}</p>
+              <p className="line-clamp-2">{highlights}</p>
             </div>
             <div>
               <p className="text-sm text-gray-400">{kilometers}km</p>
@@ -335,6 +381,11 @@ const FavoritesButton = ({
   handleUpdateFavorites,
   userFavorites,
   postId,
+}: {
+  userId: string;
+  handleUpdateFavorites: (postId: string) => void;
+  userFavorites: string[];
+  postId: string;
 }) => {
   if (userId) {
     return (
@@ -357,22 +408,54 @@ const FavoritesButton = ({
 const AuctionRibbon = () => {
   return (
     <div className="absolute top-0 left-0 z-10 md:bottom-[30.5%]">
-      <Image src={AuctionRibbonSVG} alt="auction" width={75} height={75} />
+      <Image
+        src="./images/AuctionRibbon.svg"
+        alt="auction"
+        width={75}
+        height={75}
+      />
     </div>
   );
 };
 
-const AdminButtons = ({ adminView, handleViewModal, car, modals, users }) => {
+interface AdminButtonsProps {
+  adminView: boolean;
+  handleViewModal: (modal: "delete" | "updateSold") => void;
+  car: Types.CarsSelectType;
+  modals: {
+    delete: {
+      inView: boolean;
+      onConfirm: (params: { car: Types.CarsSelectType }) => Promise<void>;
+    };
+    updateSold: {
+      inView: boolean;
+      onConfirm: (params: {
+        userEmail: string;
+        saleId: string;
+        sold: boolean;
+      }) => Promise<void>;
+    };
+  };
+  users: Types.UsersSelectType[];
+}
+
+const AdminButtons = ({
+  adminView,
+  handleViewModal,
+  car,
+  modals,
+  // users,
+}: AdminButtonsProps) => {
   if (adminView) {
     return (
       <>
-        <Modal
+        {/* <Modal
           title={car.brand + " " + car.model}
-          inView={modals.update.inView}
-          handleView={() => handleViewModal("update")}
+          // inView={modals.update.inView}
+          // handleView={() => handleViewModal("update")}
         >
           <CarDetailForm creatingPost={true} users={users} model={car} />
-        </Modal>
+        </Modal> */}
 
         <Modal
           title={"¿Estas seguro?"}
@@ -380,20 +463,26 @@ const AdminButtons = ({ adminView, handleViewModal, car, modals, users }) => {
           handleView={() => handleViewModal("delete")}
           onConfirm={() => modals.delete.onConfirm({ car })}
         >
-          {car.AuctionId || car.SaleId ? (
-            <p>
-              No hay vuelta atrás a esta acción. Una vez que la publicación es
-              eliminada, no podrá recuperarla y el detalle de vehículo{" "}
-              <b>&quot;{car.brand + " " + car.model}&quot;</b> será eliminado de
-              nuestra base de datos.
-            </p>
-          ) : (
+          {/* {car.postType === "auction" || car.postType === "sale" ? ( */}
+          <p>
+            No hay vuelta atrás a esta acción. Una vez que la publicación es
+            eliminada, no podrá recuperarla y el detalle de vehículo{" "}
+            <b>
+              &quot;{car.brand} {car.model}&quot;
+            </b>{" "}
+            será eliminado de nuestra base de datos.
+          </p>
+          {/* ) 
+          : (
             <p>
               No hay vuelta atrás a esta acción. Una vez que el detalle de
-              vehículo <b>&quot;{car.brand + " " + car.model}&quot;</b> es
-              eliminado, también será eliminado de nuestra base de datos.
+              vehículo{" "}
+              <b>
+                &quot;{car.brand} {car.model}&quot;
+              </b>{" "}
+              es eliminado, también será eliminado de nuestra base de datos.
             </p>
-          )}
+          )} */}
         </Modal>
 
         <ul className="absolute top-0 right-0 z-10 m-2 flex scale-0 items-center gap-2 text-lg text-white transition-all duration-300 group-hover:scale-100">
@@ -408,7 +497,7 @@ const AdminButtons = ({ adminView, handleViewModal, car, modals, users }) => {
           <li>
             <button
               className="rounded-md border-2 border-blue-500 p-1 text-blue-500 transition-all duration-300 hover:bg-blue-500 hover:text-white"
-              onClick={() => handleViewModal("update")}
+              // onClick={() => handleViewModal("update")}
             >
               <MdBrush />
             </button>
@@ -417,9 +506,29 @@ const AdminButtons = ({ adminView, handleViewModal, car, modals, users }) => {
       </>
     );
   }
+  return null;
 };
 
-const SoldButton = ({
+interface SoldButtonProps {
+  userView: boolean;
+  isSeller: boolean;
+  saleId: string;
+  sold: boolean;
+  handleViewModal: (modal: "delete" | "update" | "updateSold") => void;
+  modals: {
+    updateSold: {
+      inView: boolean;
+      onConfirm: (params: {
+        userEmail: string;
+        saleId: string;
+        sold: boolean;
+      }) => Promise<void>;
+    };
+  };
+  userEmail: string;
+}
+
+const _SoldButton = ({
   userView,
   isSeller,
   saleId,
@@ -427,7 +536,7 @@ const SoldButton = ({
   handleViewModal,
   modals,
   userEmail,
-}) => {
+}: SoldButtonProps) => {
   if (userView && isSeller && saleId && !sold) {
     return (
       <>
@@ -435,7 +544,9 @@ const SoldButton = ({
           title={"Actualizar estado"}
           inView={modals.updateSold.inView}
           handleView={() => handleViewModal("updateSold")}
-          onConfirm={() => modals.updateSold.onConfirm({ userEmail, saleId })}
+          onConfirm={() =>
+            modals.updateSold.onConfirm({ userEmail, saleId, sold: true })
+          }
         >
           <p>
             Presiona &quot;Confirmar&quot; para marcar este vehículo como
@@ -459,6 +570,7 @@ const SoldButton = ({
       </>
     );
   }
+  return null;
 };
 
 export default AutoCard;

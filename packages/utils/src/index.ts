@@ -487,3 +487,43 @@ export function sanitizeEmail(email: string): string {
     name: email.split("@")[0]?.replace(/\s+/g, "") ?? "",
   });
 }
+
+const capitalizeFirstLetter = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const lowercaseFirstLetter = (str: string) => {
+  return str.charAt(0).toLowerCase() + str.slice(1);
+};
+
+export function featuresArrayToText(array: string[]) {
+  const newArray = [];
+  for (let i = 0; i < array.length; i++) {
+    if (i === 0) {
+      const feature = array[i];
+      const featureCapitalized = feature
+        ? capitalizeFirstLetter(feature)
+        : null;
+      if (featureCapitalized) {
+        newArray.push(featureCapitalized);
+      }
+    }
+
+    if (i > 0) {
+      const feature = array[i];
+      const featureLowercase = feature ? lowercaseFirstLetter(feature) : null;
+      if (featureLowercase) {
+        newArray.push(featureLowercase);
+      }
+    }
+
+    if (i + 1 < array.length) {
+      newArray.push(", ");
+    }
+  }
+  newArray.push(".");
+
+  const arrayToText = newArray.join("");
+
+  return arrayToText;
+}
