@@ -1,2 +1,2 @@
-export * from "@defierros/db/src/types";
+export * from "@defierros/db/types";
 export * from "./neverthrow";
