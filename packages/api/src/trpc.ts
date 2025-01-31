@@ -13,7 +13,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { db } from "@defierros/db/client";
+import { db } from "@defierros/db";
 
 /**
  * Isomorphic Session getter for API requests
