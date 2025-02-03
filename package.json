@@ -3,8 +3,12 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "clean": "pnpm run clean:node_modules && pnpm run clean:package-lock && pnpm run clean:pnpm-lock",
+    "clean": "pnpm run clean:node_modules && pnpm run clean:package-lock && pnpm run clean:pnpm-lock && pnpm run clean:next && pnpm run clean:cache && pnpm run clean:turbo && pnpm run clean:dist",
     "clean:node_modules": "find . -name 'node_modules' -type d -prune -print -exec rm -rf '{}' +",
+    "clean:next": "find . -name '.next' -type d -prune -print -exec rm -rf '{}' +",
+    "clean:cache": "find . -name '.cache' -type d -prune -print -exec rm -rf '{}' +",
+    "clean:turbo": "find . -name '.turbo' -type d -prune -print -exec rm -rf '{}' +",
+    "clean:dist": "find . -name 'dist' -type d -prune -print -exec rm -rf '{}' +",
     "clean:package-lock": "find . -type f -name package-lock.json -exec rm {} +",
     "clean:pnpm-lock": "find . -type f -name pnpm-lock.yaml -exec rm {} +",
     "clean:workspaces": "turbo run clean",

@@ -6,9 +6,16 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./src/index.ts",
       "default": "./src/index.ts"
     },
     "./*": {
+      "default": [
+        "./src/*.ts",
+        "./src/*.tsx"
+      ]
+    },
+    "./src/*": {
       "default": [
         "./src/*.ts",
         "./src/*.tsx"

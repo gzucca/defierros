@@ -25,6 +25,17 @@ const config = {
     // This ensures proper environment variable loading during build
     instrumentationHook: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/*/**',
+        search: '',
+      },
+    ],
+  },
 };
 
 export default config;

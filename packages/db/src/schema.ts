@@ -161,7 +161,7 @@ export const Users = pgTable("Users", (t) => ({
   id: t.varchar({ length: 64 }).notNull().primaryKey(),
   name: t.varchar({ length: 128 }),
   email: t.varchar({ length: 128 }),
-  auth0Id: t.varchar({ length: 128 }),
+  clerkId: t.varchar({ length: 128 }),
   sellerType: t
     .varchar({ length: 64 })
     .$type<"privateParty" | "dealership">()

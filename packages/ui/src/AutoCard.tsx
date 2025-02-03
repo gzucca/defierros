@@ -1,9 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { FaStar } from "react-icons/fa";
+// import { FaStar } from "react-icons/fa";
 import { FiClock } from "react-icons/fi";
 import { MdBrush, MdDelete } from "react-icons/md";
 
@@ -14,15 +14,15 @@ import type { Types } from "@defierros/types";
 import CountdownTimer from "./CountdownTimer";
 import Modal from "./Modal";
 
-interface ModalState<T> {
-  inView: boolean;
-  onConfirm: (params: T) => Promise<void>;
-}
+// interface ModalState<T> {
+//   inView: boolean;
+//   onConfirm: (params: T) => Promise<void>;
+// }
 
 export const AutoCard = ({
   car,
-  auctionId,
-  saleId,
+  // auctionId,
+  //saleId,
   bids = [],
   adminView = false,
   userView = false,
@@ -31,34 +31,33 @@ export const AutoCard = ({
   userId,
   // userEmail,
   userFavorites = [],
-  sold,
   cardType,
   onUpdateFavorite,
   onDeleteCar,
   onUpdateSold,
 }: {
   car: Types.CarsSelectType;
-  auctionId: string;
-  saleId: string;
+  // auctionId: string;
+  //saleId: string;
   bids: Types.BidsSelectType[];
   adminView: boolean;
   userView: boolean;
   isSeller: boolean;
   users: Types.UsersSelectType[];
-  userId: string;
+  userId?: string;
   // userEmail: string;
   userFavorites: string[];
-  sold: boolean;
+ // sold: boolean;
   cardType: string;
-  onUpdateFavorite: ({
+  onUpdateFavorite?: ({
     userId,
     postId,
   }: {
     userId: string;
     postId: string;
   }) => Promise<void>;
-  onDeleteCar: ({ carId }: { carId: string }) => Promise<void>;
-  onUpdateSold: ({
+  onDeleteCar?: ({ carId }: { carId: string }) => Promise<void>;
+  onUpdateSold?: ({
     userEmail,
     saleId,
     sold,
@@ -68,16 +67,16 @@ export const AutoCard = ({
     sold: boolean;
   }) => Promise<void>;
 }) => {
-  const { endTime, startingPrice } = car;
+  const { endTime, startingPrice, postType, sold } = car;
 
-  const postId = auctionId || saleId;
+  // const postId = auctionId || saleId;
 
   const [currentBid, setCurrentBid] = useState(0);
   // const dispatch = useDispatch();
 
-  const handleUpdateFavorites = async (postId: string) => {
-    await onUpdateFavorite({ userId: userId, postId: postId });
-  };
+  // const handleUpdateFavorites = async (postId: string) => {
+  //   await onUpdateFavorite({ userId: userId, postId: postId });
+  // };
 
   useEffect(() => {
     if (bids.length > 0) {
@@ -87,46 +86,44 @@ export const AutoCard = ({
     }
   }, [bids, startingPrice]);
 
-  const [modals, setModals] = useState<{
-    delete: ModalState<{ car: Types.CarsSelectType }>;
-    updateSold: ModalState<{
-      userEmail: string;
-      saleId: string;
-      sold: boolean;
-    }>;
-    // Add other modals here if needed
-  }>({
-    delete: {
-      inView: false,
-      onConfirm: async ({ car }) => {
-        await onDeleteCar({ carId: car.id });
-        location.reload();
-      },
-    },
-    updateSold: {
-      inView: false,
-      onConfirm: async ({ userEmail, saleId, sold }) => {
-        await onUpdateSold({ sold, saleId, userEmail });
-      },
-    },
-    // update: { inView: false, onConfirm: handleUpdate },
-  });
+  // const [modals, setModals] = useState<{
+  //   delete: ModalState<{ car: Types.CarsSelectType }>;
+  //   updateSold: ModalState<{
+  //     userEmail: string;
+  //     saleId: string;
+  //     sold: boolean;
+  //   }>;
+  //   // Add other modals here if needed
+  // }>({
+  //   delete: {
+  //     inView: false,
+  //     onConfirm: async ({ car }) => {
+  //       await onDeleteCar({ carId: car.id });
+  //       location.reload();
+  //     },
+  //   },
+  //   updateSold: {
+  //     inView: false,
+  //     onConfirm: async ({ userEmail, saleId, sold }) => {
+  //       await onUpdateSold({ sold, saleId, userEmail });
+  //     },
+  //   },
+  //   // update: { inView: false, onConfirm: handleUpdate },
+  // });
 
-  const handleViewModal = (modal: keyof typeof modals): void => {
-    setModals({
-      ...modals,
-      [modal]: { ...modals[modal], inView: !modals[modal].inView },
-    });
-  };
+  // const handleViewModal = (modal: keyof typeof modals): void => {
+  //   setModals({
+  //     ...modals,
+  //     [modal]: { ...modals[modal], inView: !modals[modal].inView },
+  //   });
+  // };
 
   const postLink = () => {
-    if (auctionId) {
-      return `/auctions/${auctionId}` as const;
+    if (postType === "auction") {
+      return `/auctions/${car.id}` as const;
+    } else {
+      return `/sales/${car.id}` as const;
     }
-    if (saleId) {
-      return `/sales/${saleId}` as const;
-    }
-    return "/" as const;
   };
 
   if (!car.images) <></>;
@@ -153,20 +150,17 @@ export const AutoCard = ({
             handleViewModal={handleViewModal}
           />
 */}
-          <FavoritesButton
+          {/* <FavoritesButton
             userId={userId}
             postId={postId}
             handleUpdateFavorites={handleUpdateFavorites}
             userFavorites={userFavorites}
-          />
+          /> */}
 
           <Link className="mx-auto" href={postLink()}>
             <CarDetail
-              auctionId={auctionId}
-              saleId={saleId}
               userFavorites={userFavorites}
               userId={userId}
-              postId={postId}
               sold={sold}
               currentBid={currentBid}
               adminView={adminView}
@@ -188,14 +182,11 @@ export const AutoCard = ({
             handleUpdateFavorites={handleUpdateFavorites}
             userFavorites={userFavorites}
           /> */}
-          {!!auctionId && <AuctionRibbon />}
+          {postType === "auction" && <AuctionRibbon />}
           <Link className="mx-auto" href={postLink()}>
             <CarDetail
-              auctionId={auctionId}
-              saleId={saleId}
               userFavorites={userFavorites}
               userId={userId}
-              postId={postId}
               endTime={endTime}
               sold={sold}
               currentBid={currentBid}
@@ -208,20 +199,17 @@ export const AutoCard = ({
     default:
       return (
         <article className="group relative w-full">
-          <AdminButtons
+          {/* <AdminButtons
             users={users}
             modals={modals}
             car={car}
             adminView={adminView}
             handleViewModal={handleViewModal}
-          />
+          /> */}
           <div className="cursor-default">
             <CarDetail
-              auctionId={auctionId}
-              saleId={saleId}
               userFavorites={userFavorites}
               userId={userId}
-              postId={postId}
               endTime={endTime}
               sold={sold}
               currentBid={currentBid}
@@ -263,7 +251,7 @@ const checkNotFinished = (endTime: Date | null, sold: boolean): boolean => {
 };
 
 const CarDetail = ({
-  auctionId,
+  //  auctionId,
   saleId,
   sold,
   currentBid,
@@ -280,6 +268,7 @@ const CarDetail = ({
     images,
     city,
     province,
+    postType,
   } = car;
 
   const mainImage = images && images.length > 0 ? images[0] : null;
@@ -287,8 +276,8 @@ const CarDetail = ({
   return (
     <div className="relative flex">
       <div
-        className={`group aspect-video h-80 grow overflow-hidden rounded-md shadow-md md:w-[22rem] md:max-w-none lg:w-[22rem] xl:w-[20rem] 2xl:w-[22rem] ${
-          auctionId || saleId
+        className={`group aspect-video h-80 grow overflow-hidden rounded-md shadow-md md:w-[22rem] md:max-w-[22rem] lg:w-[22rem] xl:w-[20rem] 2xl:w-[22rem] ${
+          postType === "auction" 
             ? "bg-gray-100 hover:bg-gray-200"
             : "bg-red-50 hover:bg-red-100"
         } transition-all duration-150`}
@@ -325,7 +314,7 @@ const CarDetail = ({
             </div>
           )}
 
-          {auctionId && (
+          {postType === "auction" && (
             <div className="absolute bottom-1 flex w-full items-end justify-end text-sm">
               <ul
                 className={`grid ${
@@ -376,34 +365,34 @@ const CarDetail = ({
   );
 };
 
-const FavoritesButton = ({
-  userId,
-  handleUpdateFavorites,
-  userFavorites,
-  postId,
-}: {
-  userId: string;
-  handleUpdateFavorites: (postId: string) => void;
-  userFavorites: string[];
-  postId: string;
-}) => {
-  if (userId) {
-    return (
-      <button
-        onClick={() => handleUpdateFavorites(postId)}
-        className="absolute right-4 bottom-[29.5%] z-10 md:bottom-[30.5%]"
-      >
-        <FaStar
-          className={`text-xl ${
-            userFavorites.includes(postId)
-              ? "text-black"
-              : "text-gray-400 hover:text-gray-500"
-          } `}
-        />
-      </button>
-    );
-  }
-};
+// const FavoritesButton = ({
+//   userId,
+//   handleUpdateFavorites,
+//   userFavorites,
+//   postId,
+// }: {
+//   userId: string;
+//   handleUpdateFavorites: (postId: string) => void;
+//   userFavorites: string[];
+//   postId: string;
+// }) => {
+//   if (userId) {
+//     return (
+//       <button
+//         onClick={() => handleUpdateFavorites(postId)}
+//         className="absolute right-4 bottom-[29.5%] z-10 md:bottom-[30.5%]"
+//       >
+//         <FaStar
+//           className={`text-xl ${
+//             userFavorites.includes(postId)
+//               ? "text-black"
+//               : "text-gray-400 hover:text-gray-500"
+//           } `}
+//         />
+//       </button>
+//     );
+//   }
+// };
 
 const AuctionRibbon = () => {
   return (
@@ -418,96 +407,96 @@ const AuctionRibbon = () => {
   );
 };
 
-interface AdminButtonsProps {
-  adminView: boolean;
-  handleViewModal: (modal: "delete" | "updateSold") => void;
-  car: Types.CarsSelectType;
-  modals: {
-    delete: {
-      inView: boolean;
-      onConfirm: (params: { car: Types.CarsSelectType }) => Promise<void>;
-    };
-    updateSold: {
-      inView: boolean;
-      onConfirm: (params: {
-        userEmail: string;
-        saleId: string;
-        sold: boolean;
-      }) => Promise<void>;
-    };
-  };
-  users: Types.UsersSelectType[];
-}
+// interface AdminButtonsProps {
+//   adminView: boolean;
+//   handleViewModal: (modal: "delete" | "updateSold") => void;
+//   car: Types.CarsSelectType;
+//   modals: {
+//     delete: {
+//       inView: boolean;
+//       onConfirm: (params: { car: Types.CarsSelectType }) => Promise<void>;
+//     };
+//     updateSold: {
+//       inView: boolean;
+//       onConfirm: (params: {
+//         userEmail: string;
+//         saleId: string;
+//         sold: boolean;
+//       }) => Promise<void>;
+//     };
+//   };
+//   users: Types.UsersSelectType[];
+// }
 
-const AdminButtons = ({
-  adminView,
-  handleViewModal,
-  car,
-  modals,
-  // users,
-}: AdminButtonsProps) => {
-  if (adminView) {
-    return (
-      <>
-        {/* <Modal
-          title={car.brand + " " + car.model}
-          // inView={modals.update.inView}
-          // handleView={() => handleViewModal("update")}
-        >
-          <CarDetailForm creatingPost={true} users={users} model={car} />
-        </Modal> */}
+// const AdminButtons = ({
+//   adminView,
+//   handleViewModal,
+//   car,
+//   modals,
+//   // users,
+// }: AdminButtonsProps) => {
+//   if (adminView) {
+//     return (
+//       <>
+//         {/* <Modal
+//           title={car.brand + " " + car.model}
+//           // inView={modals.update.inView}
+//           // handleView={() => handleViewModal("update")}
+//         >
+//           <CarDetailForm creatingPost={true} users={users} model={car} />
+//         </Modal> */}
 
-        <Modal
-          title={"¿Estas seguro?"}
-          inView={modals.delete.inView}
-          handleView={() => handleViewModal("delete")}
-          onConfirm={() => modals.delete.onConfirm({ car })}
-        >
-          {/* {car.postType === "auction" || car.postType === "sale" ? ( */}
-          <p>
-            No hay vuelta atrás a esta acción. Una vez que la publicación es
-            eliminada, no podrá recuperarla y el detalle de vehículo{" "}
-            <b>
-              &quot;{car.brand} {car.model}&quot;
-            </b>{" "}
-            será eliminado de nuestra base de datos.
-          </p>
-          {/* ) 
-          : (
-            <p>
-              No hay vuelta atrás a esta acción. Una vez que el detalle de
-              vehículo{" "}
-              <b>
-                &quot;{car.brand} {car.model}&quot;
-              </b>{" "}
-              es eliminado, también será eliminado de nuestra base de datos.
-            </p>
-          )} */}
-        </Modal>
+//         <Modal
+//           title={"¿Estas seguro?"}
+//           inView={modals.delete.inView}
+//           handleView={() => handleViewModal("delete")}
+//           onConfirm={() => modals.delete.onConfirm({ car })}
+//         >
+//           {/* {car.postType === "auction" || car.postType === "sale" ? ( */}
+//           <p>
+//             No hay vuelta atrás a esta acción. Una vez que la publicación es
+//             eliminada, no podrá recuperarla y el detalle de vehículo{" "}
+//             <b>
+//               &quot;{car.brand} {car.model}&quot;
+//             </b>{" "}
+//             será eliminado de nuestra base de datos.
+//           </p>
+//           {/* )
+//           : (
+//             <p>
+//               No hay vuelta atrás a esta acción. Una vez que el detalle de
+//               vehículo{" "}
+//               <b>
+//                 &quot;{car.brand} {car.model}&quot;
+//               </b>{" "}
+//               es eliminado, también será eliminado de nuestra base de datos.
+//             </p>
+//           )} */}
+//         </Modal>
 
-        <ul className="absolute top-0 right-0 z-10 m-2 flex scale-0 items-center gap-2 text-lg text-white transition-all duration-300 group-hover:scale-100">
-          <li>
-            <button
-              className="rounded-md border-2 border-red-500 p-1 text-red-500 transition-all duration-300 hover:bg-red-500 hover:text-white"
-              onClick={() => handleViewModal("delete")}
-            >
-              <MdDelete />
-            </button>
-          </li>
-          <li>
-            <button
-              className="rounded-md border-2 border-blue-500 p-1 text-blue-500 transition-all duration-300 hover:bg-blue-500 hover:text-white"
-              // onClick={() => handleViewModal("update")}
-            >
-              <MdBrush />
-            </button>
-          </li>
-        </ul>
-      </>
-    );
-  }
-  return null;
-};
+//         <ul className="absolute top-0 right-0 z-10 m-2 flex scale-0 items-center gap-2 text-lg text-white transition-all duration-300 group-hover:scale-100">
+//           <li>
+//             <button
+//               className="rounded-md border-2 border-red-500 p-1 text-red-500 transition-all duration-300 hover:bg-red-500 hover:text-white"
+//               onClick={() => handleViewModal("delete")}
+//             >
+//               <MdDelete />
+//             </button>
+//           </li>
+//           <li>
+//             <button
+//               className="rounded-md border-2 border-blue-500 p-1 text-blue-500 transition-all duration-300 hover:bg-blue-500 hover:text-white"
+//               // onClick={() => handleViewModal("update")}
+//             >
+//               <MdBrush />
+//             </button>
+//           </li>
+//         </ul>
+//       </>
+//     );
+//   }
+//   return null;
+// };
 
 interface SoldButtonProps {
   userView: boolean;

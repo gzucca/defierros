@@ -17,10 +17,7 @@ const createContext = cache(async () => {
   const heads = new Headers(headers());
   heads.set("x-trpc-source", "rsc");
 
-  return createTRPCContext({
-    headers: heads,
-    session: null,
-  });
+  return createTRPCContext();
 });
 
 const getQueryClient = cache(createQueryClient);

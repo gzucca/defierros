@@ -2,13 +2,13 @@ import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
 import { desc, eq } from "@defierros/db";
-import { CreatePostSchema, Post } from "@defierros/db/schema";
+import { schema } from "@defierros/db";
 
 import { protectedProcedure, publicProcedure } from "../trpc";
 
 export const postRouter = {
   all: publicProcedure.query(({ ctx }) => {
-    return ctx.db.select().from(Post).orderBy(desc(Post.id));
+    return ctx.db.select().from(schema.Post).orderBy(desc(schema.Post.id));
     // return ctx.db.query.Post.findMany({
     //   orderBy: desc(Post.id),
     //   limit: 10,
@@ -18,7 +18,7 @@ export const postRouter = {
   byId: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {
-      return ctx.db.select().from(Post).where(eq(Post.id, input.id));
+      return ctx.db.select().from(schema.Post).where(eq(schema.Post.id, input.id));
 
       // return ctx.db.query.Post.findFirst({
       //   where: eq(Post.id, input.id),
@@ -26,12 +26,12 @@ export const postRouter = {
     }),
 
   create: protectedProcedure
-    .input(CreatePostSchema)
+    .input(schema.CreatePostSchema)
     .mutation(({ ctx, input }) => {
-      return ctx.db.insert(Post).values(input);
+      return ctx.db.insert(schema.Post).values(input);
     }),
 
   delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
-    return ctx.db.delete(Post).where(eq(Post.id, input));
+    return ctx.db.delete(schema.Post).where(eq(schema.Post.id, input));
   }),
 } satisfies TRPCRouterRecord;

@@ -1,6 +1,7 @@
 // import { Suspense } from "react";
 
-import { HydrateClient } from "~/trpc/server";
+import {  api, HydrateClient } from "~/trpc/server";
+import { AutoCard } from "@defierros/ui";
 
 // import { AuthShowcase } from "./_components/auth-showcase";
 // import {
@@ -12,9 +13,23 @@ import { HydrateClient } from "~/trpc/server";
 //THIS IS BECAUSE OF AUTHSHOWCASE
 // export const dynamic = 'force-dynamic';
 
-export default function HomePage() {
+export default async function HomePage() {
   // You can await this here if you don't want to show Suspense fallback below
   // void api.post.all.prefetch();
+  // void api.cars.all.prefetch();
+
+  const cars = await api.cars.all();
+
+
+  const car = cars[0];
+
+  if (!car) {
+    return <div>No cars found</div>;
+  }
+
+
+  console.log(car);
+
 
   return (
     // <HydrateClient>
@@ -50,6 +65,21 @@ export default function HomePage() {
 
         <p>This is a test</p>
 
+        <AutoCard
+
+          car={car}
+          bids={[]}
+          adminView={false}
+          userView={false}
+          isSeller={false}
+          users={[]}
+          userId={""}
+          userFavorites={[]}
+          cardType={"public_post"}
+          onUpdateFavorite={undefined}
+          onDeleteCar={undefined}
+          onUpdateSold={undefined}
+        />
         <>
           <section className="flex min-h-[50vh] justify-center lg:grid lg:grid-cols-[80fr__20fr] lg:gap-4">
             <div className="grid h-fit w-fit grid-cols-1 place-items-start justify-items-center gap-4 p-0 md:grid-cols-2 md:gap-y-8 lg:w-full xl:grid-cols-3">
