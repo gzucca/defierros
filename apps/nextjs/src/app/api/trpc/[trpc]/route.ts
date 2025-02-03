@@ -31,10 +31,7 @@ const handler = async (req: NextRequest) => {
     router: appRouter,
     req,
     createContext: () =>
-      createTRPCContext({
-        session: null,
-        headers: req.headers,
-      }),
+      createTRPCContext(),
     onError:
       env.NODE_ENV === "development"
         ? ({ path, error }: any) => {

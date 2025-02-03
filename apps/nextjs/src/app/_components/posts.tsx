@@ -1,7 +1,7 @@
 "use client";
 
 import type { RouterOutputs } from "@defierros/api";
-import { CreatePostSchema } from "@defierros/db/schema";
+import { schema } from "@defierros/db";
 import { cn } from "@defierros/ui";
 import { Button } from "@defierros/ui/button";
 import {
@@ -19,7 +19,7 @@ import { api } from "~/trpc/react";
 
 export function CreatePostForm() {
   const form = useForm({
-    schema: CreatePostSchema,
+    schema: schema.CreatePostSchema,
     defaultValues: {
       content: "",
       title: "",

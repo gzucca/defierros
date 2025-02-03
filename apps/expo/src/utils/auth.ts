@@ -25,8 +25,8 @@ export const signIn = async () => {
 };
 
 export const useUser = () => {
-  const { data: session } = api.auth.getSession.useQuery();
-  return session?.user ?? null;
+  // const { data: session } = api.auth.getSession.useQuery();
+  // return session?.user ?? null;
 };
 
 export const useSignIn = () => {
@@ -44,12 +44,12 @@ export const useSignIn = () => {
 
 export const useSignOut = () => {
   const utils = api.useUtils();
-  const signOut = api.auth.signOut.useMutation();
+  // const signOut = api.auth.signOut.useMutation();
   const router = useRouter();
 
   return async () => {
-    const res = await signOut.mutateAsync();
-    if (!res.success) return;
+    // const res = await signOut.mutateAsync();
+    // if (!res.success) return;
     await deleteToken();
     await utils.invalidate();
     router.replace("/");
