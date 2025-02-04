@@ -25,13 +25,13 @@ export const metadata: Metadata = {
       ? "https://defierros.vercel.app"
       : "http://localhost:3000",
   ),
-  title: "Create T3 Turbo",
+  title: "Defierros",
   description: "Simple monorepo with shared backend for web & mobile apps",
   openGraph: {
-    title: "Create T3 Turbo",
+    title: "Defierros",
     description: "Simple monorepo with shared backend for web & mobile apps",
-    url: "https://create-t3-turbo.vercel.app",
-    siteName: "Create T3 Turbo",
+    url: "https://defierros.vercel.app",
+    siteName: "Defierros",
   },
   twitter: {
     card: "summary_large_image",
@@ -66,7 +66,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
               <UserButton />
             </SignedIn>
             <TRPCReactProvider>{props.children}</TRPCReactProvider>
-            <div className="absolute bottom-4 right-4">
+            <div className="fixed bottom-4 right-4">
               <ThemeToggle />
             </div>
             <Toaster />

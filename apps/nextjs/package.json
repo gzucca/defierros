@@ -20,6 +20,7 @@
     "@defierros/api": "workspace:*",
     "@defierros/db": "workspace:*",
     "@defierros/env": "workspace:*",
+    "@defierros/types": "workspace:*",
     "@defierros/ui": "workspace:*",
     "@defierros/validators": "workspace:*",
     "@t3-oss/env-nextjs": "^0.11.1",

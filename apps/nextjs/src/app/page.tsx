@@ -18,7 +18,7 @@ export default async function HomePage() {
   // void api.post.all.prefetch();
   // void api.cars.all.prefetch();
 
-  const cars = await api.cars.all();
+  const cars = await api.cars.byPostType({ postType: "auction" });
 
 
   const car = cars[0];
@@ -58,7 +58,7 @@ export default async function HomePage() {
     //   </main>
     // </HydrateClient>
     <HydrateClient>
-      <main className="mx-auto bg-white text-black min-h-[70vh] max-w-[1400px]">
+      <main className="mx-auto bg-background text-black min-h-[70vh] max-w-[1400px]">
         <h1 className="clip-path-inset absolute h-[1px] w-[1px] overflow-hidden border-0 p-0">
           Clasificados y subastas
         </h1>
