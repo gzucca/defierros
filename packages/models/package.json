@@ -17,9 +17,15 @@
   },
   "prettier": "@defierros/prettier-config",
   "dependencies": {
+    "@clerk/backend": "^1.23.11",
     "@defierros/db": "workspace:*",
     "@defierros/env": "workspace:*",
-    "neverthrow": "^8.1.1"
+    "@defierros/types": "workspace:*",
+    "jsonwebtoken": "^9.0.2",
+    "jspdf": "^2.5.2",
+    "jwks-rsa": "^3.1.0",
+    "neverthrow": "^8.1.1",
+    "svix": "^1.36.0"
   },
   "devDependencies": {
     "@defierros/eslint-config": "workspace:*",

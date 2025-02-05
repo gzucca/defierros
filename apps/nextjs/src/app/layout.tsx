@@ -22,7 +22,7 @@ import { env } from "@defierros/env";
 export const metadata: Metadata = {
   metadataBase: new URL(
     env.VERCEL_ENV === "production"
-      ? "https://defierros.vercel.app"
+      ? env.NEXT_PUBLIC_CLIENT_URL
       : "http://localhost:3000",
   ),
   title: "Defierros",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Defierros",
     description: "Simple monorepo with shared backend for web & mobile apps",
-    url: "https://defierros.vercel.app",
+    url: env.NEXT_PUBLIC_CLIENT_URL,
     siteName: "Defierros",
   },
   twitter: {

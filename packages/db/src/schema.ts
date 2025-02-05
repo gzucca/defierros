@@ -40,10 +40,13 @@ export const Post = pgTable("post", (t) => ({
   id: t.uuid().notNull().primaryKey().defaultRandom(),
   title: t.varchar({ length: 256 }).notNull(),
   content: t.text().notNull(),
-  createdAt: t.timestamp().defaultNow().notNull(),
+  createdAt: t
+    .timestamp({ mode: "date", withTimezone: true })
+    .defaultNow()
+    .notNull(),
   updatedAt: t
     .timestamp({ mode: "date", withTimezone: true })
-    .$onUpdateFn(() => sql`now()`),
+    .$onUpdate(() => new Date()),
 }));
 
 export const CreatePostSchema = createInsertSchema(Post, {
@@ -88,10 +91,13 @@ export const Cars = pgTable("Cars", (t) => ({
   // car_UUID
   id: t.varchar({ length: 64 }).notNull().primaryKey(),
   adminUploaderId: t.varchar({ length: 64 }),
-  createdAt: t.timestamp().defaultNow().notNull(),
+  createdAt: t
+    .timestamp({ mode: "date", withTimezone: true })
+    .defaultNow()
+    .notNull(),
   updatedAt: t
     .timestamp({ mode: "date", withTimezone: true })
-    .$onUpdateFn(() => sql`now()`),
+    .$onUpdate(() => new Date()),
   postType: t
     .varchar({ length: 64 })
     .$type<"auction" | "sale">()
@@ -144,7 +150,10 @@ export const Bids = pgTable("Bids", (t) => ({
   // bid_UUID
   id: t.varchar({ length: 64 }).notNull().primaryKey(),
   ammount: t.integer().notNull().default(0),
-  createdAt: t.timestamp().defaultNow().notNull(),
+  createdAt: t
+    .timestamp({ mode: "date", withTimezone: true })
+    .defaultNow()
+    .notNull(),
   paymentId: t.varchar({ length: 64 }).references(() => Payments.id),
   carId: t
     .varchar({ length: 64 })
@@ -168,16 +177,19 @@ export const Users = pgTable("Users", (t) => ({
     .notNull()
     .default("privateParty"),
   userName: t.varchar({ length: 128 }),
-  profilePicture: t.varchar({ length: 128 }),
+  profilePicture: t.varchar({ length: 256 }),
   phoneNumber: t.varchar({ length: 128 }),
   isActive: t.boolean().notNull().default(true),
   isAdmin: t.boolean().notNull().default(false),
   favorites: t.text("favorites").array().default([]),
   mercadoPagoId: t.varchar({ length: 128 }),
-  createdAt: t.timestamp().defaultNow().notNull(),
+  createdAt: t
+    .timestamp({ mode: "date", withTimezone: true })
+    .defaultNow()
+    .notNull(),
   updatedAt: t
     .timestamp({ mode: "date", withTimezone: true })
-    .$onUpdateFn(() => sql`now()`),
+    .$onUpdate(() => new Date()),
 }));
 
 export const usersRelations = relations(Users, ({ many }) => ({
@@ -191,7 +203,13 @@ export const usersRelations = relations(Users, ({ many }) => ({
 export const Comments = pgTable("Comments", (t) => ({
   // comment_UUID
   id: t.varchar({ length: 64 }).notNull().primaryKey(),
-  createdAt: t.timestamp().defaultNow().notNull(),
+  createdAt: t
+    .timestamp({ mode: "date", withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: t
+    .timestamp({ mode: "date", withTimezone: true })
+    .$onUpdate(() => new Date()),
   message: t.text().notNull(),
   carId: t
     .varchar({ length: 64 })
@@ -210,7 +228,13 @@ export const commentsRelations = relations(Comments, ({ one }) => ({
 export const Replies = pgTable("Replies", (t) => ({
   // reply_UUID
   id: t.varchar({ length: 64 }).notNull().primaryKey(),
-  createdAt: t.timestamp().defaultNow().notNull(),
+  createdAt: t
+    .timestamp({ mode: "date", withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: t
+    .timestamp({ mode: "date", withTimezone: true })
+    .$onUpdate(() => new Date()),
   message: t.text().notNull(),
   commentId: t
     .varchar({ length: 64 })
@@ -232,17 +256,23 @@ export const repliesRelations = relations(Replies, ({ one }) => ({
 export const DollarValue = pgTable("DollarValue", (t) => ({
   // dollarValue_UUID
   id: t.varchar({ length: 64 }).notNull().primaryKey(),
-  createdAt: t.timestamp().defaultNow().notNull(),
+  createdAt: t
+    .timestamp({ mode: "date", withTimezone: true })
+    .defaultNow()
+    .notNull(),
   value: t.numeric().default("0").notNull(),
 }));
 
 export const Payments = pgTable("Payments", (t) => ({
   // payment_UUID
   id: t.varchar({ length: 64 }).notNull().primaryKey(),
-  createdAt: t.timestamp().defaultNow().notNull(),
+  createdAt: t
+    .timestamp({ mode: "date", withTimezone: true })
+    .defaultNow()
+    .notNull(),
   updatedAt: t
     .timestamp({ mode: "date", withTimezone: true })
-    .$onUpdateFn(() => sql`now()`),
+    .$onUpdate(() => new Date()),
   value: t.numeric().default("0").notNull(),
   paymentType: t
     .varchar({ length: 64 })

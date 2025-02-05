@@ -20,8 +20,10 @@
     "@defierros/api": "workspace:*",
     "@defierros/db": "workspace:*",
     "@defierros/env": "workspace:*",
+    "@defierros/models": "workspace:*",
     "@defierros/types": "workspace:*",
     "@defierros/ui": "workspace:*",
+    "@defierros/utils": "workspace:*",
     "@defierros/validators": "workspace:*",
     "@t3-oss/env-nextjs": "^0.11.1",
     "@tanstack/react-query": "catalog:",
@@ -34,6 +36,7 @@
     "react": "catalog:react18",
     "react-dom": "catalog:react18",
     "superjson": "2.2.1",
+    "svix": "^1.36.0",
     "zod": "catalog:"
   },
   "devDependencies": {
