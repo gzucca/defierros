@@ -19,11 +19,13 @@
 // import { useEffect, useRef, useState } from "react";
 // import dynamic from "next/dynamic";
 // import { useDispatch, useSelector } from "react-redux";
+import Image from "next/image";
 import Script from "next/script";
+import { auth } from "@clerk/nextjs/server";
 import { HiDocumentArrowDown } from "react-icons/hi2";
 
 import { api } from "~/trpc/server";
-
+import CountDownBar from "./_components/CountDownBar";
 
 // const Responsive = dynamic(
 //   () => {
@@ -51,9 +53,21 @@ export default async function AuctionPage({
 }: {
   params: { carId: string };
 }) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return <div>User not found</div>;
+  }
+
   const { carId } = params;
 
   const car = await api.cars.byId({ id: carId });
+
+  const user = await api.users.byId({ clerkId: userId });
+
+  if (!user) {
+    return <div>User not found</div>;
+  }
 
   if (!car) {
     return <div>Car not found</div>;
@@ -194,7 +208,7 @@ export default async function AuctionPage({
         strategy="afterInteractive"
       />
 
-      <main className="mx-auto min-h-[70vh] max-w-[1400px] text-primary">
+      <main className="text-primary mx-auto min-h-[70vh] max-w-[1400px]">
         {/* {!car && <CarLoader />} */}
 
         <>
@@ -204,17 +218,23 @@ export default async function AuctionPage({
               carModel={car.model}
             /> */}
 
-          {/* <CountDownBar
-              className="sticky top-[68px] block lg:top-[76.8px]"
-              user={user}
-              router={router}
-              car={car}
-              auction={auction}
-              dispatch={dispatch}
-              currentBid={currentBid}
-              currentEndTime={currentEndTime}
-              socket={socket}
-            /> */}
+          {car.images?.[0] && (
+            <Image
+              src={car.images[0]}
+              alt={`${car.brand} ${car.model} ${car.year}`}
+              width={1400}
+              height={900}
+              className="w-full h-auto aspect-video object-cover"
+            />
+          )}
+
+          <CountDownBar
+            className="sticky top-[68px] block lg:top-[76.8px]"
+            user={user}
+            auction={car}
+            currentBid={car.startingPrice ?? 0}
+            currentEndTime={car.endTime?.toLocaleString() ?? ""}
+          />
 
           <section className="mx-4 my-4">
             <h1 className="font-oswaldFamily text-left text-2xl font-bold">
@@ -229,25 +249,25 @@ export default async function AuctionPage({
             <div>
               <section className="flex flex-col md:me-6">
                 <dl className="mx-1 grid grid-cols-[40%,_60%] leading-10 md:grid-cols-[20%,_30%,20%,_30%]">
-                  <dt className="border-y border-e border-accent bg-background ps-2 font-semibold">
+                  <dt className="border-accent bg-background border-y border-e ps-2 font-semibold">
                     Marca
                   </dt>
                   <dd className="flex items-center border-y border-e ps-2">
                     {car.brand}
                   </dd>
-                  <dt className="border-y border-e border-accent bg-background ps-2 font-semibold">
+                  <dt className="border-accent bg-background border-y border-e ps-2 font-semibold">
                     Modelo
                   </dt>
                   <dd className="flex items-center border-y border-e ps-2">
                     {car.model}
                   </dd>
-                  <dt className="border-y border-e border-accent bg-background ps-2 font-semibold">
+                  <dt className="border-accent bg-background border-y border-e ps-2 font-semibold">
                     Año
                   </dt>
                   <dd className="flex items-center border-y border-e ps-2">
                     {car.year}
                   </dd>
-                  <dt className="border-y border-e border-accent bg-background ps-2 font-semibold">
+                  <dt className="border-accent bg-background border-y border-e ps-2 font-semibold">
                     Kilometraje
                   </dt>
                   <dd
@@ -256,49 +276,49 @@ export default async function AuctionPage({
                   >
                     {car.kilometers?.toLocaleString()}
                   </dd>
-                  <dt className="border-y border-e border-accent bg-background ps-2 font-semibold">
+                  <dt className="border-accent bg-background border-y border-e ps-2 font-semibold">
                     Vendedor
                   </dt>
                   <dd className="flex items-center border-y border-e ps-2">
                     {/* {seller.userName} */}
                   </dd>
-                  <dt className="border-y border-e border-accent bg-background ps-2 font-semibold">
+                  <dt className="border-accent bg-background border-y border-e ps-2 font-semibold">
                     Titular vende
                   </dt>
                   <dd className="flex items-center border-y border-e ps-2">
                     {car.ownerSelling ? "Sí" : "No"}
                   </dd>
-                  <dt className="border-y border-e border-accent bg-background ps-2 font-semibold">
+                  <dt className="border-accent bg-background border-y border-e ps-2 font-semibold">
                     Motor
                   </dt>
                   <dd className="flex items-center border-y border-e ps-2">
                     {car.engine}
                   </dd>
-                  <dt className="border-y border-e border-accent bg-background ps-2 font-semibold">
+                  <dt className="border-accent bg-background border-y border-e ps-2 font-semibold">
                     Transmisión
                   </dt>
                   <dd className="flex items-center border-y border-e ps-2">
                     {car.transmission}
                   </dd>
-                  <dt className="border-y border-e border-accent bg-background ps-2 font-semibold">
+                  <dt className="border-accent bg-background border-y border-e ps-2 font-semibold">
                     Tracción
                   </dt>
                   <dd className="flex items-center border-y border-e ps-2">
                     {car.driveTrain}
                   </dd>
-                  <dt className="border-y border-e border-accent bg-background ps-2 font-semibold">
+                  <dt className="border-accent bg-background border-y border-e ps-2 font-semibold">
                     Segmento
                   </dt>
                   <dd className="flex items-center border-y border-e ps-2">
                     {car.bodyType}
                   </dd>
-                  <dt className="border-y border-e border-accent bg-background ps-2 font-semibold">
+                  <dt className="border-accent bg-background border-y border-e ps-2 font-semibold">
                     Color
                   </dt>
                   <dd className="flex items-center border-y border-e ps-2">
                     {car.color}
                   </dd>
-                  <dt className="border-y border-e border-accent bg-background ps-2 font-semibold">
+                  <dt className="border-accent bg-background border-y border-e ps-2 font-semibold">
                     Tipo de vendedor
                   </dt>
                   <dd className="flex items-center border-y border-e ps-2">
@@ -322,7 +342,7 @@ export default async function AuctionPage({
                   <h2 className="font-oswaldFamily mb-2 px-2 text-xl font-bold">
                     Equipamiento
                   </h2>
-                  <ul className="list-disc ps-6 pe-1 text-[15px] text-primary">
+                  <ul className="text-primary list-disc ps-6 pe-1 text-[15px]">
                     {car.equipment}
                   </ul>
                 </section>
@@ -333,7 +353,7 @@ export default async function AuctionPage({
                   <h2 className="font-oswaldFamily mb-2 px-2 text-xl font-bold">
                     Modificaciones
                   </h2>
-                  <ul className="list-disc ps-6 pe-1 text-[15px] text-primary">
+                  <ul className="text-primary list-disc ps-6 pe-1 text-[15px]">
                     {car.modifications}
                   </ul>
                 </section>
@@ -344,7 +364,7 @@ export default async function AuctionPage({
                   <h2 className="font-oswaldFamily mb-2 px-2 text-xl font-bold">
                     Fallas conocidas
                   </h2>
-                  <ul className="list-disc ps-6 pe-1 text-[15px] text-primary">
+                  <ul className="text-primary list-disc ps-6 pe-1 text-[15px]">
                     {car.knownFlaws}
                   </ul>
                 </section>
@@ -355,7 +375,7 @@ export default async function AuctionPage({
                   <h2 className="font-oswaldFamily mb-2 px-2 text-xl font-bold">
                     Historial de servicio reciente
                   </h2>
-                  <ul className="list-disc ps-6 pe-1 text-[15px] text-primary">
+                  <ul className="text-primary list-disc ps-6 pe-1 text-[15px]">
                     {car.services}
                   </ul>
                 </section>
@@ -366,7 +386,7 @@ export default async function AuctionPage({
                   <h2 className="font-oswaldFamily mb-2 px-2 text-xl font-bold">
                     Ítems incluidos en la venta
                   </h2>
-                  <ul className="list-disc ps-6 pe-1 text-[15px] text-primary">
+                  <ul className="text-primary list-disc ps-6 pe-1 text-[15px]">
                     {car.addedItems}
                   </ul>
                 </section>
@@ -377,7 +397,7 @@ export default async function AuctionPage({
                   <ul className="flex place-content-start gap-4">
                     {car.domain && (
                       <a href={car.domain.replace("http", "https")}>
-                        <HiDocumentArrowDown className="mx-auto text-4xl text-primary md:text-5xl" />
+                        <HiDocumentArrowDown className="text-primary mx-auto text-4xl md:text-5xl" />
                         <h2 className="font-oswaldFamily">
                           Informe de dominio
                         </h2>
@@ -385,7 +405,7 @@ export default async function AuctionPage({
                     )}
                     {car.inspection && (
                       <a href={car.inspection.replace("http", "https")}>
-                        <HiDocumentArrowDown className="mx-auto text-4xl text-primary md:text-5xl" />
+                        <HiDocumentArrowDown className="text-primary mx-auto text-4xl md:text-5xl" />
                         <h2 className="font-oswaldFamily">
                           Informe de Inspección
                         </h2>

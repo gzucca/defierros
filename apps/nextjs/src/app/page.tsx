@@ -28,7 +28,7 @@ export default async function HomePage() {
   }
 
 
-  console.log(car);
+  // console.log(car);
 
 
   return (

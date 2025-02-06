@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 
 interface ModalProps {
@@ -15,7 +15,7 @@ interface ModalProps {
   confirmText?: string;
 }
 
-const Modal = ({
+export default function Modal({
   inView,
   handleView,
   onConfirm,
@@ -24,7 +24,7 @@ const Modal = ({
   children,
   preventClose = false,
   confirmText = "Confirmar",
-}: ModalProps) => {
+}: ModalProps) {
   const handleClose = () => {
     handleView();
     if (onCancel) {
@@ -110,6 +110,4 @@ const Modal = ({
       )}
     </>
   );
-};
-
-export default Modal;
+}
