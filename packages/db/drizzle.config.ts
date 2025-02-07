@@ -1,8 +1,7 @@
 import { defineConfig } from "drizzle-kit";
+import { config } from "dotenv";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("Missing DATABASE_URL");
-}
+config({ path: ".env" });
 
 export default defineConfig({
   schema: "./src/schema.ts",

@@ -55,15 +55,12 @@ export default async function AuctionPage({
 }) {
   const { userId } = await auth();
 
-  if (!userId) {
-    return <div>User not found</div>;
-  }
+  const user = userId ? await api.users.byId({ clerkId: userId }) : undefined;
 
   const { carId } = params;
 
   const car = await api.cars.byId({ id: carId });
 
-  const user = await api.users.byId({ clerkId: userId });
 
 
   if (!car) {
@@ -229,8 +226,8 @@ export default async function AuctionPage({
             className="sticky top-[68px] block lg:top-[76.8px]"
             user={user}
             auction={car}
-            currentBid={car.startingPrice ?? 0}
-            currentEndTime={car.endTime?.toLocaleString() ?? ""}
+            currentBid={car.startingPrice}
+            currentEndTime={car.endTime}
           />
 
           <section className="mx-4 my-4">
@@ -271,7 +268,7 @@ export default async function AuctionPage({
                     suppressHydrationWarning
                     className="flex items-center border-y border-e ps-2"
                   >
-                    {car.kilometers?.toLocaleString()}
+                    {car.kilometers.toLocaleString()}
                   </dd>
                   <dt className="border-accent bg-background border-y border-e ps-2 font-semibold">
                     Vendedor

@@ -10,10 +10,6 @@ export type FailureCode =
   | "FileSizeTooLargeError"
   | "NotFoundError"
   | "CallFailedError"
-  | "SamGovError"
-  | "HighergovError"
-  | "OpenAIError"
-  | "StripeError"
   /**
    * if the user already had a trial and cancelled
    */

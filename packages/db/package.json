@@ -25,6 +25,7 @@
   },
   "prettier": "@defierros/prettier-config",
   "dependencies": {
+    "@defierros/env": "workspace:*",
     "@neondatabase/serverless": "^0.10.4",
     "drizzle-orm": "^0.38.4",
     "drizzle-zod": "^0.6.1",

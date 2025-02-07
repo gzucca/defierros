@@ -12,7 +12,9 @@ import { getAuth } from "@clerk/nextjs/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import type { AuthObject } from '@clerk/backend';
 
+import type { DB } from "@defierros/db"; // Adjust the import path as necessary
 import { db } from "@defierros/db";
 
 /**
@@ -38,7 +40,10 @@ import { db } from "@defierros/db";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async () => {
+export const createTRPCContext = async (): Promise<{
+  db: DB;
+  auth: AuthObject;
+}> => {
   // const authToken = opts.headers.get("Authorization") ?? null;
   // const session = await isomorphicGetSession(opts.headers);
 

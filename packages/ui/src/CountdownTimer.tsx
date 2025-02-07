@@ -8,7 +8,7 @@ interface TimeState {
 }
 
 interface CountdownTimerProps {
-  endDate: string | Date;
+  endDate: Date;
 }
 
 const getLength = (number: number): number => {

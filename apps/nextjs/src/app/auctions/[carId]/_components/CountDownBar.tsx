@@ -28,7 +28,7 @@ interface CountDownBarProps {
   auction: Types.CarsSelectType;
   className?: string;
   currentBid: number;
-  currentEndTime: string;
+  currentEndTime: Date;
 }
 
 export default function CountDownBar({
@@ -91,7 +91,7 @@ export default function CountDownBar({
         </Button>
       );
     }
-    if (auction.endTime && auction.endTime < new Date()) {
+    if (auction.endTime < new Date()) {
       return (
         <Button
           disabled

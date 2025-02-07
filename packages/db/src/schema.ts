@@ -111,10 +111,10 @@ export const Cars = pgTable("Cars", (t) => ({
   brand: t.varchar({ length: 128 }).notNull(),
   model: t.varchar({ length: 128 }).notNull(),
   year: t.integer().notNull(),
-  minPrice: t.integer().default(0),
-  startingPrice: t.integer().default(100),
-  endTime: t.timestamp({ withTimezone: true }),
-  kilometers: t.integer().default(0),
+  minPrice: t.integer().default(0).notNull(),
+  startingPrice: t.integer().default(100).notNull(),
+  endTime: t.timestamp({ mode: "date", withTimezone: true }).notNull(),
+  kilometers: t.integer().default(0).notNull(),
   engine: t.varchar({ length: 128 }).notNull(),
   transmission: t.varchar({ length: 128 }).notNull(),
   driveTrain: t.varchar({ length: 128 }),
@@ -163,6 +163,10 @@ export const Bids = pgTable("Bids", (t) => ({
     .varchar({ length: 64 })
     .notNull()
     .references(() => Users.id, { onDelete: "cascade" }),
+}));
+
+export const CarsRelations = relations(Cars, ({ many }) => ({
+  bids: many(Bids),
 }));
 
 export const Users = pgTable("Users", (t) => ({
