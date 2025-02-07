@@ -65,9 +65,6 @@ export default async function AuctionPage({
 
   const user = await api.users.byId({ clerkId: userId });
 
-  if (!user) {
-    return <div>User not found</div>;
-  }
 
   if (!car) {
     return <div>Car not found</div>;

@@ -24,7 +24,7 @@ import { api } from "~/trpc/react";
 import EnterOffer from "./EnterOffer";
 
 interface CountDownBarProps {
-  user: Types.UsersSelectType | null;
+  user?: Types.UsersSelectType;
   auction: Types.CarsSelectType;
   className?: string;
   currentBid: number;
@@ -73,11 +73,14 @@ export default function CountDownBar({
     }
   };
 
-  const renderAuctionButton = (
-    userObject: Types.UsersSelectType | null,
-    auctionObject: Types.CarsSelectType,
-  ) => {
-    if (userObject?.id === auctionObject.userId) {
+  const renderAuctionButton = ({
+    user,
+    auction,
+  }: {
+    user?: Types.UsersSelectType;
+    auction: Types.CarsSelectType;
+  }) => {
+    if (user?.id === auction.userId) {
       return (
         <Button
           disabled
@@ -88,7 +91,7 @@ export default function CountDownBar({
         </Button>
       );
     }
-    if (auctionObject.endTime && auctionObject.endTime < new Date()) {
+    if (auction.endTime && auction.endTime < new Date()) {
       return (
         <Button
           disabled
@@ -99,7 +102,7 @@ export default function CountDownBar({
         </Button>
       );
     }
-    if (userObject?.email && (!userObject.name || !userObject.phoneNumber)) {
+    if (user?.email && (!user.name || !user.phoneNumber)) {
       return (
         <>
           <Button
@@ -112,7 +115,7 @@ export default function CountDownBar({
         </>
       );
     }
-    if (userObject?.mercadoPagoId) {
+    if (user?.mercadoPagoId) {
       return (
         <Button
           id="barButton"
@@ -175,7 +178,7 @@ export default function CountDownBar({
           <span className="mx-auto text-lg font-semibold">
             U${Intl.NumberFormat("en-US").format(currentBid)}
           </span>
-          {renderAuctionButton(user, auction)}
+          {renderAuctionButton({ user, auction })}
         </div>
       </div>
       <Modal

@@ -20,7 +20,7 @@ Always use the following imports without changing the path. Read these files to 
 ## 2. Transcribe Javascript code to Typescript
 
 * 1. Always use "export default function" instead of "export const" for components.
-* 2. Destructure the props of the component.
+* 2. Always destructure the props of the component and functions.
 * 3. Generate the types for the props for the component. If there is an object with a name resembling a table in the database, import the type from the types folder (@defierros/types). NEVER import types from the db folder (@defierros/db). Do it like this:
 ```typescript
 import type { Types } from "@defierros/types";
