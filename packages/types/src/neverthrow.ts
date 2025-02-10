@@ -42,6 +42,9 @@ export type ResultType<T, E> =
     };
 
 export type ServerActionPromise<T, E = FailureType> = Promise<ResultType<T, E>>;
+
 export type ModelPromise<T, E extends FailureType = FailureType> = Promise<
   Result<T, E>
 >;
+
+export type ModelResult<T, E extends FailureType = FailureType> = Result<T, E>;

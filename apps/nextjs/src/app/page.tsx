@@ -21,7 +21,7 @@ export default async function HomePage() {
 
   const carsResult = await api.cars.get.byPostType({ postType: "auction" });
 
-  if (carsResult.isErr()) {
+  if (!carsResult.value) {
     return <div>Error fetching cars</div>;
   }
 

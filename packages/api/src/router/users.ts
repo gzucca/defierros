@@ -1,22 +1,34 @@
+import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import type { Types } from "@defierros/types";
 import { Users } from "@defierros/models";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { publicProcedure } from "../trpc";
 
-export const usersRouter = createTRPCRouter({
-  get: createTRPCRouter({
+export const usersRouter = {
+  get: {
     all: publicProcedure.query(async () => {
-      return await Users.getAll();
+      const users = await Users.getAll();
+
+      if (users.isErr()) {
+        return { error: users.error.message };
+      }
+
+      return { value: users.value };
     }),
 
     byClerkId: publicProcedure
       .input(z.object({ clerkId: z.string() }))
       .query(async ({ input }) => {
-        return await Users.getByClerkId({ clerkId: input.clerkId });
+        const user = await Users.getByClerkId({ clerkId: input.clerkId });
+
+        if (user.isErr()) {
+          return { error: user.error.message };
+        }
+
+        return { value: user.value };
       }),
-  }),
+  },
 
   // create: protectedProcedure
   //   .input(schema.CreatePostSchema)
@@ -27,9 +39,4 @@ export const usersRouter = createTRPCRouter({
   // delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
   //   return ctx.db.delete(schema.Post).where(eq(schema.Post.id, input));
   // }),
-});
-
-// Export the router type for consumers
-export type UsersRouter = typeof usersRouter._def.procedures;
-export type UsersRouterNeverthrow =
-  Types.TRPCRouterRecordNeverthrow<UsersRouter>;
+} satisfies TRPCRouterRecord;

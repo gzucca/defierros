@@ -57,10 +57,6 @@ export default async function AuctionPage({
 
   const user = userId
     ? await api.users.get.byClerkId({ clerkId: userId }).then((result) => {
-        if (result.isErr()) {
-          return undefined;
-        }
-
         return result.value;
       })
     : undefined;
@@ -69,7 +65,7 @@ export default async function AuctionPage({
 
   const carResult = await api.cars.get.byId({ id: carId });
 
-  if (carResult.isErr()) {
+  if (!carResult.value) {
     return <div>Car not found</div>;
   }
 
