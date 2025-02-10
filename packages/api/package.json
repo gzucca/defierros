@@ -22,6 +22,8 @@
   "dependencies": {
     "@clerk/nextjs": "^6.10.2",
     "@defierros/db": "workspace:*",
+    "@defierros/models": "workspace:*",
+    "@defierros/types": "workspace:*",
     "@defierros/validators": "workspace:*",
     "@trpc/server": "catalog:",
     "next": "^14.2.15",

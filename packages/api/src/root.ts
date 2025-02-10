@@ -1,5 +1,3 @@
-import type { DB } from "@defierros/db";
-
 import { carsRouter } from "./router/cars";
 import { postRouter } from "./router/post";
 import { usersRouter } from "./router/users";

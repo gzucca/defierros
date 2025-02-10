@@ -3,16 +3,12 @@ import type { Result } from "neverthrow";
 export type FailureCode =
   | "Aborted"
   | "InvalidBodyError"
-  /** if the args passed to a function are invalid */
   | "InvalidArgsError"
   | "InvalidExtensionError"
   | "InvalidTokenError"
   | "FileSizeTooLargeError"
   | "NotFoundError"
   | "CallFailedError"
-  /**
-   * if the user already had a trial and cancelled
-   */
   | "StripePreviousTrialError"
   | "ResendError"
   | "ClerkError"

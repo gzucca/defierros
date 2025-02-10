@@ -1,7 +1,8 @@
 // import { Suspense } from "react";
 
-import {  api, HydrateClient } from "~/trpc/server";
 import { AutoCard } from "@defierros/ui";
+
+import { api, HydrateClient } from "~/trpc/server";
 
 // import { AuthShowcase } from "./_components/auth-showcase";
 // import {
@@ -18,18 +19,19 @@ export default async function HomePage() {
   // void api.post.all.prefetch();
   // void api.cars.all.prefetch();
 
-  const cars = await api.cars.byPostType({ postType: "auction" });
+  const carsResult = await api.cars.get.byPostType({ postType: "auction" });
 
+  if (carsResult.isErr()) {
+    return <div>Error fetching cars</div>;
+  }
 
-  const car = cars[0];
+  const cars = carsResult.value;
 
-  if (!car) {
+  if (!cars.length) {
     return <div>No cars found</div>;
   }
 
-
   // console.log(car);
-
 
   return (
     // <HydrateClient>
@@ -58,28 +60,30 @@ export default async function HomePage() {
     //   </main>
     // </HydrateClient>
     <HydrateClient>
-      <main className="mx-auto bg-background text-black min-h-[70vh] max-w-[1400px]">
+      <main className="bg-background mx-auto min-h-[70vh] max-w-[1400px] text-black">
         <h1 className="clip-path-inset absolute h-[1px] w-[1px] overflow-hidden border-0 p-0">
           Clasificados y subastas
         </h1>
 
         <p>This is a test</p>
 
-        <AutoCard
-
-          car={car}
-          bids={[]}
-          adminView={false}
-          userView={false}
-          isSeller={false}
-          users={[]}
-          userId={""}
-          userFavorites={[]}
-          cardType={"public_post"}
-          onUpdateFavorite={undefined}
-          onDeleteCar={undefined}
-          onUpdateSold={undefined}
-        />
+        {cars.map((car) => (
+          <AutoCard
+            key={car.id}
+            car={car}
+            bids={[]}
+            adminView={false}
+            userView={false}
+            isSeller={false}
+            users={[]}
+            userId={""}
+            userFavorites={[]}
+            cardType={"public_post"}
+            onUpdateFavorite={undefined}
+            onDeleteCar={undefined}
+            onUpdateSold={undefined}
+          />
+        ))}
         <>
           <section className="flex min-h-[50vh] justify-center lg:grid lg:grid-cols-[80fr__20fr] lg:gap-4">
             <div className="grid h-fit w-fit grid-cols-1 place-items-start justify-items-center gap-4 p-0 md:grid-cols-2 md:gap-y-8 lg:w-full xl:grid-cols-3">

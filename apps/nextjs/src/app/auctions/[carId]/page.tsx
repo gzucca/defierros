@@ -55,17 +55,25 @@ export default async function AuctionPage({
 }) {
   const { userId } = await auth();
 
-  const user = userId ? await api.users.byId({ clerkId: userId }) : undefined;
+  const user = userId
+    ? await api.users.get.byClerkId({ clerkId: userId }).then((result) => {
+        if (result.isErr()) {
+          return undefined;
+        }
+
+        return result.value;
+      })
+    : undefined;
 
   const { carId } = params;
 
-  const car = await api.cars.byId({ id: carId });
+  const carResult = await api.cars.get.byId({ id: carId });
 
-
-
-  if (!car) {
+  if (carResult.isErr()) {
     return <div>Car not found</div>;
   }
+
+  const car = carResult.value;
 
   // const seller = auction?.User;
   // const dispatch = useDispatch();
@@ -218,7 +226,7 @@ export default async function AuctionPage({
               alt={`${car.brand} ${car.model} ${car.year}`}
               width={1400}
               height={900}
-              className="w-full h-auto aspect-video object-cover"
+              className="aspect-video h-auto w-full object-cover"
             />
           )}
 
