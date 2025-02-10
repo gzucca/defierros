@@ -35,5 +35,5 @@ export const carsRouter = createTRPCRouter({
 });
 
 // Export the router type for consumers
-export type CarsRouter = typeof carsRouter;
+export type CarsRouter = typeof carsRouter._def.procedures;
 export type CarsRouterNeverthrow = Types.TRPCRouterRecordNeverthrow<CarsRouter>;
