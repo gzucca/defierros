@@ -47,7 +47,7 @@ export const AutoCard = ({
   userId?: string;
   // userEmail: string;
   userFavorites: string[];
- // sold: boolean;
+  // sold: boolean;
   cardType: string;
   onUpdateFavorite?: ({
     userId,
@@ -82,7 +82,7 @@ export const AutoCard = ({
     if (bids.length > 0) {
       setCurrentBid(bids[bids.length - 1]?.ammount ?? 0);
     } else {
-      setCurrentBid(startingPrice ?? 0);
+      setCurrentBid(startingPrice);
     }
   }, [bids, startingPrice]);
 
@@ -277,7 +277,7 @@ const CarDetail = ({
     <div className="relative flex">
       <div
         className={`group aspect-video h-80 grow overflow-hidden rounded-md shadow-md md:w-[22rem] md:max-w-[22rem] lg:w-[22rem] xl:w-[20rem] 2xl:w-[22rem] ${
-          postType === "auction" 
+          postType === "auction"
             ? "bg-gray-100 hover:bg-gray-200"
             : "bg-red-50 hover:bg-red-100"
         } transition-all duration-150`}
@@ -308,7 +308,7 @@ const CarDetail = ({
                   <p className="me-1 text-gray-500">
                     {sold && "Vendido - "}Clasificado
                   </p>
-                  U${Intl.NumberFormat("en-US").format(minPrice ?? 0)}
+                  U${Intl.NumberFormat("en-US").format(minPrice)}
                 </li>
               </div>
             </div>
@@ -333,7 +333,7 @@ const CarDetail = ({
                       U$
                       {currentBid
                         ? Intl.NumberFormat("en-US").format(currentBid)
-                        : Intl.NumberFormat("en-US").format(minPrice ?? 0)}
+                        : Intl.NumberFormat("en-US").format(minPrice)}
                     </p>
                   </li>
                 )}

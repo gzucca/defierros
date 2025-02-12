@@ -1,41 +1,35 @@
 {
-  "name": "@defierros/models",
-  "version": "0.1.0",
+  "name": "@defierros/scripts",
   "private": true,
-  "license": "MIT",
+  "version": "0.1.0",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
+  "license": "MIT",
   "scripts": {
-    "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "dev": "tsc",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "with-env": "dotenv -e ../../.env --"
   },
-  "prettier": "@defierros/prettier-config",
   "dependencies": {
-    "@clerk/backend": "^1.23.11",
     "@defierros/db": "workspace:*",
     "@defierros/env": "workspace:*",
+    "@defierros/models": "workspace:*",
     "@defierros/types": "workspace:*",
     "@defierros/utils": "workspace:*",
-    "jsonwebtoken": "^9.0.2",
-    "jspdf": "^2.5.2",
-    "jwks-rsa": "^3.1.0",
-    "mercadopago": "^2.3.0",
-    "neverthrow": "^8.1.1",
-    "svix": "^1.36.0",
-    "zod": "catalog:"
+    "neverthrow": "^8.1.1"
   },
   "devDependencies": {
     "@defierros/eslint-config": "workspace:*",
     "@defierros/prettier-config": "workspace:*",
     "@defierros/tsconfig": "workspace:*",
+    "dotenv": "^16.4.5",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
-  }
+  },
+  "prettier": "@defierros/prettier-config"
 }

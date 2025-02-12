@@ -1,7 +1,7 @@
-import { chunk } from "lodash";
 import { Result } from "neverthrow";
 
 import type { Types } from "@defierros/types";
+import chunk from "lodash/chunk";
 
 export const name = "utils";
 

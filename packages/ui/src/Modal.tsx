@@ -63,7 +63,7 @@ export default function Modal({
   return (
     <>
       {inView && (
-        <div className={`fixed inset-0 z-50 flex items-center justify-center`}>
+        <div className={`fixed text-primary inset-0 z-50 flex items-center justify-center`}>
           {preventClose ? (
             <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
           ) : (
@@ -75,7 +75,7 @@ export default function Modal({
 
           <div
             id="modal"
-            className={`relative z-10 mx-2 max-h-[90vh] w-full translate-y-8 overflow-y-auto rounded-md bg-gray-50 p-6 opacity-0 shadow-lg transition-all duration-300 md:max-h-[75vh] md:w-fit md:max-w-[60%] md:min-w-[30%]`}
+            className={`relative z-10 mx-2 max-h-[90vh] w-full translate-y-8 overflow-y-auto rounded-md bg-background p-6 opacity-0 shadow-lg transition-all duration-300 md:max-h-[75vh] md:w-fit md:max-w-[60%] md:min-w-[30%]`}
           >
             <button
               className="absolute top-0 right-0 m-2 rounded-md border-2 border-red-500 p-1 font-semibold text-red-500 transition-all duration-300 hover:bg-red-500 hover:text-white"
@@ -84,7 +84,7 @@ export default function Modal({
               <AiOutlineClose />
             </button>
             <header className="flex">
-              <h1 className="mt-4 text-xl font-bold">{title}</h1>
+              <h1 className="mt-4 text-xl  font-bold">{title}</h1>
             </header>
             <main className="mt-4 mb-8">{children}</main>
             <footer className="flex items-center justify-center gap-4">

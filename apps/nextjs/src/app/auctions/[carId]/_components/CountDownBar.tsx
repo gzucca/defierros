@@ -181,18 +181,20 @@ export default function CountDownBar({
           {renderAuctionButton({ user, auction })}
         </div>
       </div>
-      <Modal
-        title={"Participar en subastas"}
-        inView={modals.register.inView}
-        handleView={() => handleViewModal("register")}
-        onConfirm={() => modals.register.onConfirm()}
-        confirmText="Ingresar"
-      >
-        Para participar en una subasta, primero debes registrarte e ingresar con
-        tu usuario.
-      </Modal>
+      {!user && (
+        <Modal
+          title={"Participar en subastas"}
+          inView={modals.register.inView}
+          handleView={() => handleViewModal("register")}
+          onConfirm={() => modals.register.onConfirm()}
+          confirmText="Ingresar"
+        >
+          Para participar en una subasta, primero debes registrarte e ingresar
+          con tu usuario.
+        </Modal>
+      )}
 
-      {user?.id && (
+      {user?.id && (!user.name || !user.phoneNumber) && (
         <Modal
           title="¡Queremos conocerte!"
           inView={modals.completeProfile.inView}

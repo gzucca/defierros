@@ -35,6 +35,9 @@ export async function getByClerkId({ clerkId }: { clerkId: string }) : Types.Mod
   return ok(userResult.value);
 }
 
+
+
+
 export async function deleteUser({
   userId,
   tx,

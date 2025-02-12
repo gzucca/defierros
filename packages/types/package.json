@@ -23,7 +23,8 @@
   },
   "prettier": "@defierros/prettier-config",
   "dependencies": {
-    "@defierros/db": "workspace:*"
+    "@defierros/db": "workspace:*",
+    "mercadopago": "^2.3.0"
   },
   "devDependencies": {
     "@defierros/eslint-config": "workspace:*",

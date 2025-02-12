@@ -9,7 +9,7 @@ export type FailureCode =
   | "FileSizeTooLargeError"
   | "NotFoundError"
   | "CallFailedError"
-  | "StripePreviousTrialError"
+  | "MercadoPagoError"
   | "ResendError"
   | "ClerkError"
   | "ClerkFormIdentifierExistsError"
