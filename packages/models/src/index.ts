@@ -4,6 +4,7 @@ export * as Users from "./users";
 export * as Cars from "./cars";
 export * as Bids from "./bids";
 export * as MercadoPago from "./mercadopago";
+export * as DollarValue from "./dollarValue";
 // export * as Comments from "./comments";
 // export * as Offers from "./offers";
 // export * as Notifications from "./notifications";

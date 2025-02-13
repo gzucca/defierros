@@ -27,6 +27,7 @@
     "jwks-rsa": "^3.1.0",
     "mercadopago": "^2.3.0",
     "neverthrow": "^8.1.1",
+    "puppeteer": "^24.2.0",
     "svix": "^1.36.0",
     "zod": "catalog:"
   },

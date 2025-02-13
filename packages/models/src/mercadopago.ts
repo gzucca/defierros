@@ -1,9 +1,9 @@
 import { Customer, MercadoPagoConfig } from "mercadopago";
-import { CustomerResponse } from "mercadopago/dist/clients/customer/commonTypes";
+import type { CustomerResponse } from "mercadopago/dist/clients/customer/commonTypes";
 import { err, fromPromise, ok } from "neverthrow";
 
 import { env } from "@defierros/env";
-import { Types } from "@defierros/types";
+import type { Types } from "@defierros/types";
 import { filterMap } from "@defierros/utils";
 
 export const mercadoPagoClient = new MercadoPagoConfig({
@@ -135,3 +135,4 @@ export async function deleteMercadoPagoCustomer({
 
   return ok(customer);
 }
+
