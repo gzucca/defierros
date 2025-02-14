@@ -22,7 +22,6 @@ export const env = createEnv({
     CLERK_FRONTEND_API_URL: z.string().url(),
     CLERK_WEBHOOK_SECRET: z.string(),
     MERCADOPAGO_ACCESS_TOKEN: z.string(),
-    URL_MERCADOPAGO_API: z.string().url(),
     WEBHOOKS_URL: z.string().url(),
     MERCADOPAGO_WEBHOOK_SECRET: z.string(),
   },
