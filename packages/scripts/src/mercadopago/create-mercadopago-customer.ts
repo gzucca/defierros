@@ -1,3 +1,4 @@
+//@ts-nocheck
 /**
  * in packages/scripts, run:
  * pnpm with-env tsx src/mercadopago/create-mercadopago-customer.ts

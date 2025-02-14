@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { initMercadoPago } from "@mercadopago/sdk-react";
+
 import type { Types } from "@defierros/types";
+import { env } from "@defierros/env";
+
+import MPCard from "./MPCard";
 
 // TODO: Create MPCard component in _components folder
 // import MPCard from "@/common/MPCard";
@@ -19,12 +24,28 @@ interface Props {
   cardsMP: unknown; // TODO: Define proper type for cardsMP
 }
 
-function EnterOffer({ user, auction, dollarValue, currentBid, cardsMP }: Props) {
+function EnterOffer({ user, auction, dollarValue, currentBid }: Props) {
   const [newOffer, setNewOffer] = useState<string>("");
-  const [amount, setAmount] = useState<string>("");
+  const [amount, setAmount] = useState<number | null>(null);
   const [error, setError] = useState({ lowBid: "", highBid: "" });
 
-  const handleSetAmount = (event: React.KeyboardEvent | null, amount: string) => {
+  useEffect(() => {
+    console.log(amount);
+  }, [amount]);
+
+  useEffect(() => {
+    initMercadoPago(env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY, {
+      locale: "es-AR",
+      advancedFraudPrevention: env.NODE_ENV === "development" ? false : true,
+      frontEndStack: "react",
+      siteId: env.NEXT_PUBLIC_MERCADOPAGO_CLIENT_ID,
+    });
+  }, []);
+
+  const handleSetAmount = (
+    event: React.KeyboardEvent | null,
+    amount: string,
+  ) => {
     if (event && event.key !== "Enter") return;
 
     const currentOffer = Number(amount);
@@ -60,7 +81,7 @@ function EnterOffer({ user, auction, dollarValue, currentBid, cardsMP }: Props) 
       });
     }
     setError({ lowBid: "", highBid: "" });
-    setAmount(String(Math.floor(currentOffer * commissionPercentage * dollarValue)));
+    setAmount(Math.floor(currentOffer * commissionPercentage * dollarValue));
   };
 
   return (
@@ -74,10 +95,10 @@ function EnterOffer({ user, auction, dollarValue, currentBid, cardsMP }: Props) 
               height={75}
               src={auction.images[0]}
               alt={auction.brand + auction.model}
-            className={`mx-auto aspect-video ${
-              amount ? "hidden" : "block"
-            } h-full w-[75%] rounded-md object-cover`}
-            sizes="15vw"
+              className={`mx-auto aspect-video ${
+                amount ? "hidden" : "block"
+              } h-full w-[75%] rounded-md object-cover`}
+              sizes="15vw"
             />
           )}
           <p className="mt-2 text-center text-xl font-semibold md:text-2xl">
@@ -88,8 +109,8 @@ function EnterOffer({ user, auction, dollarValue, currentBid, cardsMP }: Props) 
           </p>
           <p className="mx-auto mt-1 text-center text-xs text-gray-600 md:text-base">
             Esta subasta finaliza el{" "}
-            {auction.endTime?.toLocaleDateString("es-AR")} a las{" "}
-            {auction.endTime?.toLocaleTimeString("es-AR")}
+            {auction.endTime.toLocaleDateString("es-AR")} a las{" "}
+            {auction.endTime.toLocaleTimeString("es-AR")}
           </p>
         </div>
         <hr className="my-6 h-px border-t-0 bg-transparent bg-gradient-to-r from-transparent via-neutral-500 to-transparent opacity-25" />
@@ -106,12 +127,18 @@ function EnterOffer({ user, auction, dollarValue, currentBid, cardsMP }: Props) 
                 disabled={amount ? true : false}
                 value={newOffer === "0" ? "" : newOffer}
                 onChange={(e) => setNewOffer(e.target.value)}
-                onKeyDown={(e: React.KeyboardEvent) => handleSetAmount(e, newOffer)}
+                // onKeyDown={(e: React.KeyboardEvent) =>
+                //   setAmount(Number(newOffer))
+                // }
+                // onKeyDown={(e: React.KeyboardEvent) =>
+                //   handleSetAmount(e, newOffer)
+                // }
                 min={currentBid + 100}
               />
               <button
                 disabled={amount ? true : false}
-                onClick={() => handleSetAmount(null, newOffer)}
+                onClick={() => setAmount(Number(newOffer))}
+                // onClick={() => handleSetAmount(null, newOffer)}
                 className="mx-0 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50 md:text-lg"
               >
                 Continuar
@@ -171,16 +198,10 @@ function EnterOffer({ user, auction, dollarValue, currentBid, cardsMP }: Props) 
           </section>
         )}
       </div>
-      <div className="mt-4 min-w-0 md:ms-0">
-        {/* TODO: Create MPCard component in _components folder
+      <div className="mt-4 bg-red-500">
         {amount && (
-          <MPCard
-            amount={amount}
-            newOffer={newOffer}
-            auction={auction}
-            user={user}
-          />
-        )} */}
+          <MPCard amount={amount} auctionId={auction.id} userId={user.id} />
+        )}
       </div>
     </div>
   );

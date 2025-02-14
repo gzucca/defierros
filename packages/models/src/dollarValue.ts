@@ -77,9 +77,15 @@ export async function getDollarWeb() {
 }
 
 export async function getDollarWebOrDB() {
-  const dollarValue = await getDollarWeb();
-  if (dollarValue && dollarValue !== 0) {
-    await postDollarValue(dollarValue);
+  //TODO ADD NEVERTRHOW
+  try {
+    const dollarValue = await getDollarWeb();
+    if (dollarValue && dollarValue !== 0) {
+      await postDollarValue(dollarValue);
+    }
+  } catch (error) {
+    console.log("Error with getDollar:", error);
+    console.error("Error with getDollar:", error);
   }
 
   const dollarDBResult = await fromPromise(

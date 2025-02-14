@@ -1,28 +1,44 @@
 "use client";
 
-import { CardPayment } from "@mercadopago/sdk-react";
-import { StatusScreen } from "@mercadopago/sdk-react";
-import { env } from "@defierros/env";
+import {
+  CardPayment,
+  StatusScreen
+} from "@mercadopago/sdk-react";
+import type {
+  ICardPaymentBrickPayer,
+  ICardPaymentFormData,
+} from "@mercadopago/sdk-react/esm/bricks/cardPayment/type";
+import type { IBrickError } from "@mercadopago/sdk-react/esm/bricks/util/types/common";
 import { useEffect, useRef, useState } from "react";
 
-//! SOLO PARA STORYBOOK
-// import { initMercadoPago } from "@mercadopago/sdk-react";
-// initMercadoPago(process.env.MERCADOPAGO_PUBLIC_KEY, { locale: "es-AR" });
 
-export default function MPCard({ user, amount, auction, newOffer }) {
-  const [error, setError] = useState(null);
-  const [apiResponse, setApiResponse] = useState(null);
-  const ipAddress = useRef(null);
+import { api } from "~/trpc/react";
+
+type TCardPaymentBrickPaymentType = "credit_card" | "debit_card";
+
+export default function MPCard({
+  userId,
+  amount,
+  auctionId,
+}: {
+  userId: string;
+  auctionId: string;
+  amount: number;
+}) {
+  const [error, setError] = useState<string | null>(null);
+  const [apiResponse, setApiResponse] = useState<any>(null);
+  const ipAddress = useRef<string>("");
+
+  const bidPaymentMutation = api.payments.post.bidPayment.useMutation();
+
 
   useEffect(() => {
-    (async () => {
-      await fetch("https://api.ipify.org?format=json")
-        .then((response) => response.json())
-        .then((data) => {
-          ipAddress.current = data.ip;
-        })
-        .catch((error) => console.log(error));
-    })();
+    fetch("https://api.ipify.org?format=json")
+      .then((response) => response.json())
+      .then((data) => {
+        ipAddress.current = data.ip;
+      })
+      .catch((error) => console.log(error));
   }, []);
 
   const initialization = {
@@ -34,7 +50,7 @@ export default function MPCard({ user, amount, auction, newOffer }) {
   const customization = {
     paymentMethods: {
       types: {
-        excluded: ["debit_card"],
+        excluded: ["debit_card" as TCardPaymentBrickPaymentType],
       },
       maxInstallments: 1,
     },
@@ -54,34 +70,48 @@ export default function MPCard({ user, amount, auction, newOffer }) {
     },
   };
 
-  const onSubmit = async (formData) => {
-    Object.assign(formData, { user: user });
-    Object.assign(formData, { auction: { id: auction.id } });
-    Object.assign(formData, { newOffer: newOffer });
+  const onSubmit = async (
+    formData: ICardPaymentFormData<ICardPaymentBrickPayer>,
+  ) => {
+    Object.assign(formData, { userId: userId });
+    Object.assign(formData, { auctionId: auctionId });
     Object.assign(formData, { ipAddress: ipAddress.current });
-    Object.assign(formData, { deviceId: deviceId });
+    // Object.assign(formData, { deviceId: deviceId });
 
+    if (
+      !formData.payer.email ||
+      !formData.payer.identification?.number ||
+      !formData.payer.identification.type
+    ) {
+      setError("Información de pago incompleta");
+      return;
+    }
 
     try {
-      const response = await fetch(
-        `${env.BACKEND_URL}/payment/createBidPayment`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-meli-session-id": deviceId,
+      const response = await bidPaymentMutation.mutateAsync({
+        userId,
+        auctionId,
+        token: formData.token,
+        issuer_id: formData.issuer_id,
+        payment_method_id: formData.payment_method_id,
+        transaction_amount: amount,
+        installments: formData.installments,
+        payer: {
+          email: formData.payer.email,
+          identification: {
+            type: formData.payer.identification.type,
+            number: formData.payer.identification.number,
           },
-          body: formData ? JSON.stringify(formData) : "",
-        }
-      ).then((response) => response.json());
+        },
+        ipAddress: ipAddress.current,
+      });
 
-      console.log(response);
-      if (response.error === false) {
-        setApiResponse(response.data);
-      } else {
+      if (response.error) {
         setError(
-          'Ocurrió un error con el procesamiento de tu pago. Por favor comunicate con el administrador de la pagina al mail info@defierros.com con el asunto "ERROR PROCESAMIENTO DE PAGO". Te pedimos disculpas por las molestias.'
+          'Ocurrió un error con el procesamiento de tu pago. Por favor comunicate con el administrador de la pagina al mail info@defierros.com con el asunto "ERROR PROCESAMIENTO DE PAGO". Te pedimos disculpas por las molestias.',
         );
+      } else {
+        setApiResponse(response.value);
       }
 
       // if (
@@ -99,12 +129,12 @@ export default function MPCard({ user, amount, auction, newOffer }) {
     }
   };
 
-  const onError = async (error) => {
+  const onError = async (error: IBrickError) => {
     // callback called for all Brick error cases
     console.log("error en onError: " + JSON.stringify(error));
   };
 
-  const onReady = async (status) => {
+  const onReady = async () => {
     /*
       Callback called when Brick is ready.
       Here you can hide loadings from your site, for example.
@@ -113,7 +143,7 @@ export default function MPCard({ user, amount, auction, newOffer }) {
   };
 
   return (
-    <section className="min-w-0 max-w-full bg-white p-2 md:p-4">
+    <section className="max-w-full min-w-0 bg-white p-2 md:p-4">
       {error && <p className="my-2 text-2xl font-bold text-red-600">{error}</p>}
 
       {!error &&
@@ -140,7 +170,7 @@ export default function MPCard({ user, amount, auction, newOffer }) {
             locale="es-AR"
           />
         ))}
+        Hi!
     </section>
   );
 }
-

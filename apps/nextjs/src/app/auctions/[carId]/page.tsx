@@ -19,9 +19,8 @@
 // import { useEffect, useRef, useState } from "react";
 // import dynamic from "next/dynamic";
 // import { useDispatch, useSelector } from "react-redux";
-import Image from "next/image";
-import Script from "next/script";
 import { auth } from "@clerk/nextjs/server";
+import Image from "next/image";
 import { HiDocumentArrowDown } from "react-icons/hi2";
 
 import { api } from "~/trpc/server";
@@ -199,12 +198,16 @@ export default async function AuctionPage({
   //   };
   // }, [auctionId, getAuctionTrigger]);
 
+
+
   return (
     <>
-      <Script
+      {/* <Script
         src="https://www.mercadopago.com/v2/security.js"
         strategy="afterInteractive"
-      />
+        view="checkout"
+        output="deviceId"
+      /> */}
 
       <main className="text-primary mx-auto min-h-[70vh] max-w-[1400px]">
         {/* {!car && <CarLoader />} */}

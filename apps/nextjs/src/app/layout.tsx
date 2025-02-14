@@ -17,7 +17,23 @@ import { TRPCReactProvider } from "~/trpc/react";
 
 import "~/app/globals.css";
 
+import { initMercadoPago } from "@mercadopago/sdk-react";
+
 import { env } from "@defierros/env";
+
+
+// if (typeof window !== "undefined") {
+//   // checks that we are client-side
+//   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+//     capture_pageview: false,
+//     api_host:
+//       process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
+//     person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well
+//     loaded: (posthog) => {
+//       if (env.ENV === "development") posthog.debug(); // debug mode in development
+//     },
+//   });
+// }
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -53,7 +69,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
       <html lang="en" suppressHydrationWarning>
         <body
           className={cn(
-            "min-h-screen bg-background font-sans text-foreground antialiased",
+            "bg-background text-foreground min-h-screen font-sans antialiased",
             GeistSans.variable,
             GeistMono.variable,
           )}
@@ -66,7 +82,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
               <UserButton />
             </SignedIn>
             <TRPCReactProvider>{props.children}</TRPCReactProvider>
-            <div className="fixed bottom-4 right-4">
+            <div className="fixed right-4 bottom-4">
               <ThemeToggle />
             </div>
             <Toaster />

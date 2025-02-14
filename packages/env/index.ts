@@ -21,9 +21,10 @@ export const env = createEnv({
     CLERK_SECRET_KEY: z.string(),
     CLERK_FRONTEND_API_URL: z.string().url(),
     CLERK_WEBHOOK_SECRET: z.string(),
-    ACCESS_TOKEN_MERCADOPAGO: z.string(),
+    MERCADOPAGO_ACCESS_TOKEN: z.string(),
     URL_MERCADOPAGO_API: z.string().url(),
-    URL_WEBHOOK_MERCADOPAGO: z.string().url(),
+    WEBHOOKS_URL: z.string().url(),
+    MERCADOPAGO_WEBHOOK_SECRET: z.string(),
   },
 
   /**
@@ -34,6 +35,8 @@ export const env = createEnv({
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
     NEXT_PUBLIC_CLIENT_URL: z.string().url(),
+    NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY: z.string(),
+    NEXT_PUBLIC_MERCADOPAGO_CLIENT_ID: z.string(),
   },
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
@@ -43,6 +46,10 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_CLIENT_URL: process.env.NEXT_PUBLIC_CLIENT_URL,
+    NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY:
+      process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY,
+    NEXT_PUBLIC_MERCADOPAGO_CLIENT_ID:
+      process.env.NEXT_PUBLIC_MERCADOPAGO_CLIENT_ID,
   },
   skipValidation:
     !!process.env.CI || process.env.npm_lifecycle_event === "lint",
