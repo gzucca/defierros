@@ -19,8 +19,8 @@
 // import { useEffect, useRef, useState } from "react";
 // import dynamic from "next/dynamic";
 // import { useDispatch, useSelector } from "react-redux";
-import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
+import { auth } from "@clerk/nextjs/server";
 import { HiDocumentArrowDown } from "react-icons/hi2";
 
 import { api } from "~/trpc/server";
@@ -69,6 +69,10 @@ export default async function AuctionPage({
   }
 
   const car = carResult.value;
+
+  const lastBid = car.bids.length ? car.bids[0] : null;
+
+  const currentBid = lastBid ? lastBid.amount : car.startingPrice;
 
   // const seller = auction?.User;
   // const dispatch = useDispatch();
@@ -150,7 +154,7 @@ export default async function AuctionPage({
   //     setCurrentEndTime("");
   //     setComments([]);
   //   };
-  // }, [auction, car.startingPrice]);
+  // }, [auction, currentBid]);
 
   // useEffect(() => {
   //   function onReceiveBid(data) {
@@ -198,8 +202,6 @@ export default async function AuctionPage({
   //   };
   // }, [auctionId, getAuctionTrigger]);
 
-
-
   return (
     <>
       {/* <Script
@@ -233,7 +235,7 @@ export default async function AuctionPage({
             className="sticky top-[68px] block lg:top-[76.8px]"
             user={user}
             auction={car}
-            currentBid={car.startingPrice}
+            currentBid={currentBid}
             currentEndTime={car.endTime}
           />
 

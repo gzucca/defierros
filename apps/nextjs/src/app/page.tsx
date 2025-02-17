@@ -19,13 +19,13 @@ export default async function HomePage() {
   // void api.post.all.prefetch();
   // void api.cars.all.prefetch();
 
-  const carsResult = await api.cars.get.byPostType({ postType: "auction" });
+  const carsResult = await api.cars.get.byId({ id: "0c1a034e-8dbc-47f0-802b-8c0062c1233d" });
 
   if (!carsResult.value) {
     return <div>Error fetching cars</div>;
   }
 
-  const cars = carsResult.value;
+  const cars = [carsResult.value];
 
   if (!cars.length) {
     return <div>No cars found</div>;

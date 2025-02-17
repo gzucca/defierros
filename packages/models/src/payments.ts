@@ -1,4 +1,4 @@
-import { err, ok } from "neverthrow";
+import { err, fromPromise, ok } from "neverthrow";
 
 import type { Types } from "@defierros/types";
 import { db, schema } from "@defierros/db";
@@ -38,16 +38,6 @@ export async function postBidPayment({
 
   const auction = auctionResponse.value;
 
-  const dollarValueResult = await DollarValue.getDollarWebOrDB();
-
-  if (dollarValueResult.isErr()) {
-    return err(dollarValueResult.error);
-  }
-
-  const dollarValue = dollarValueResult.value;
-
-  const paymentBidId = `payment_${crypto.randomUUID()}`;
-
   // const newCardMPResult = await MercadoPago.postCustomerCard({
   //   customerId: user.mercadoPagoId,
   //   token,
@@ -73,14 +63,7 @@ export async function postBidPayment({
   //   await userDB.update({ inAuctions: inAuctionsArray });
   // }
 
-  await db.insert(schema.Payments).values({
-    id: `payment_${crypto.randomUUID()}`,
-    userId: user.id,
-    dollarValueId: dollarValue.id,
-    value: String(transaction_amount),
-    paymentType: "auction-bid",
-    carId: auction.id,
-  });
+  const paymentBidId = `payment_${crypto.randomUUID()}`;
 
   const bodyMercadoPago = {
     additional_info: {
@@ -107,6 +90,8 @@ export async function postBidPayment({
       //* ADD PAYMENT TYPE FOR WEBHOOKMP ROUTE
       // 'paymentBid' | 'payment' | 'paymentSaleCredit'
       payment_type: "paymentBid",
+      auctionId: auction.id,
+      userId: user.id,
     },
     token: token,
     three_d_secure_mode: "optional",
@@ -130,9 +115,7 @@ export async function postBidPayment({
     description: `DEFIERROS_OFERTA_${paymentBidId}`,
     statement_descriptor: `DEFIERROS_OFERTA_${paymentBidId}`,
     capture: false,
-  };
-
-  console.log("este es bodyMercadoPago createBidPayment", bodyMercadoPago);
+  } as Types.PaymentCreateRequest;
 
   const paymentResponse = await MercadoPago.postPayment({
     body: bodyMercadoPago,
@@ -145,4 +128,34 @@ export async function postBidPayment({
   const payment = paymentResponse.value;
 
   return ok(payment);
+}
+
+export async function postPayment({
+  id,
+  userId,
+  dollarValueId,
+  value,
+  paymentType,
+  carId,
+}: Types.PaymentsInsertType): Types.ModelPromise<{ success: boolean }> {
+  const paymentResponse = await fromPromise(
+    db.insert(schema.Payments).values({
+      id,
+      userId,
+      dollarValueId,
+      value,
+      paymentType,
+      carId,
+    }),
+    (e) => ({
+      code: "DatabaseError" as const,
+      message: `Failed to post payment: ${(e as Error).message}`,
+    }),
+  );
+
+  if (paymentResponse.isErr()) {
+    return err(paymentResponse.error);
+  }
+
+  return ok({ success: true });
 }

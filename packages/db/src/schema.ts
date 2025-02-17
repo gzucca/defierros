@@ -149,7 +149,7 @@ export const Cars = pgTable("Cars", (t) => ({
 export const Bids = pgTable("Bids", (t) => ({
   // bid_UUID
   id: t.varchar({ length: 64 }).notNull().primaryKey(),
-  ammount: t.integer().notNull().default(0),
+  amount: t.integer().notNull().default(0),
   createdAt: t
     .timestamp({ mode: "date", withTimezone: true })
     .defaultNow()
@@ -167,6 +167,15 @@ export const Bids = pgTable("Bids", (t) => ({
 
 export const CarsRelations = relations(Cars, ({ many }) => ({
   bids: many(Bids),
+}));
+
+export const BidsRelations = relations(Bids, ({ one }) => ({
+  car: one(Cars, { fields: [Bids.carId], references: [Cars.id] }),
+  payment: one(Payments, {
+    fields: [Bids.paymentId],
+    references: [Payments.id],
+  }),
+  user: one(Users, { fields: [Bids.userId], references: [Users.id] }),
 }));
 
 export const Users = pgTable("Users", (t) => ({

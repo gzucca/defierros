@@ -1,6 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
+import type { Types } from "@defierros/types";
 import { Cars } from "@defierros/models";
 
 import { publicProcedure } from "../trpc";

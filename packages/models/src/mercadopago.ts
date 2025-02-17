@@ -212,3 +212,23 @@ export async function postPayment({
 
   return ok(paymentResponse.value);
 }
+
+export async function getPaymentById({
+  paymentId,
+}: {
+  paymentId: string;
+}): Types.ModelPromise<Types.PaymentResponse> {
+  const paymentResponse = await fromPromise(
+    mpPayment.get({ id: paymentId }),
+    (e) => ({
+      code: "MercadoPagoError" as const,
+      message: `Failed to get mercado pago payment: ${(e as Error).message}`,
+    }),
+  );
+
+  if (paymentResponse.isErr()) {
+    return err(paymentResponse.error);
+  }
+
+  return ok(paymentResponse.value);
+}

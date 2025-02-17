@@ -1,93 +1,16 @@
 import { err, fromPromise, ok } from "neverthrow";
-import puppeteer from "puppeteer";
 
 import type { Types } from "@defierros/types";
-import { db, desc, eq, schema } from "@defierros/db";
+import { db, desc, schema } from "@defierros/db";
 
 export async function getDollarWeb() {
-  try {
-    // Start a Puppeteer session with:
-    // - a visible browser (`headless: false` - easier to debug because you'll see the browser in action)
-    // - no default viewport (`defaultViewport: null` - website page will in full width and height)
-    const browser = await puppeteer.launch({
-      headless: true,
-      executablePath:
-        process.env.NODE_ENV === "production"
-          ? "/usr/bin/chromium-browser"
-          : "",
-    });
-
-    // Open a new page
-    const page = await browser.newPage();
-
-    await page.setCacheEnabled(false);
-
-    // On this new page:
-    // - open the website
-    // - wait until the dom content is loaded (HTML is ready)
-    await page.goto(
-      "https://dolarhoy.com/i/cotizaciones/dolar-bancos-y-casas-de-cambio",
-      {
-        waitUntil: "networkidle0",
-      },
-    );
-
-    // - wait until the required selector is loaded
-    await page.waitForSelector(
-      "body > div.iframe-cotizaciones__container > div.container__data > div > p:nth-child(2)",
-      { timeout: 60_000 },
-    );
-
-    let dollarValue = 0;
-
-    // Get page data
-    dollarValue = await page.evaluate(() => {
-      try {
-        // Fetch the element
-
-        const valueTag = document.querySelector(
-          "body > div.iframe-cotizaciones__container > div.container__data > div > p:nth-child(2)",
-        );
-
-        // Check if the element exists
-        if (!valueTag) {
-          console.log("Element not found");
-          return 0;
-        }
-
-        // Get the displayed text and return it (`.innerText`)
-        const value = Number(valueTag.textContent?.split("\n")[0]);
-        // const value = String(valueTag.innerText.split("\n")[0]);
-
-        return value;
-      } catch (error) {
-        console.error("Error extracting dollar value:", error);
-        return 0; // Return undefined if there's an error
-      }
-    });
-
-    // Close the browser
-    await browser.close();
-
-    return dollarValue;
-  } catch (error) {
-    console.log("Error with getDollar:", error);
-    console.error("Error with getDollar:", error);
-  }
+  const response = await fetch("https://dolarapi.com/v1/dolares/oficial");
+  const data = (await response.json()) as { compra: number };
+  return data.compra;
 }
 
-export async function getDollarWebOrDB() {
-  //TODO ADD NEVERTRHOW
-  try {
-    const dollarValue = await getDollarWeb();
-    if (dollarValue && dollarValue !== 0) {
-      await postDollarValue(dollarValue);
-    }
-  } catch (error) {
-    console.log("Error with getDollar:", error);
-    console.error("Error with getDollar:", error);
-  }
-
+// Returns the dollar value from the web or the DB
+export async function getDollarWebOrDB(): Types.ModelPromise<Types.DollarValueSelectType> {
   const dollarDBResult = await fromPromise(
     db.query.DollarValue.findFirst({
       orderBy: [desc(schema.DollarValue.createdAt)],
@@ -111,13 +34,40 @@ export async function getDollarWebOrDB() {
     });
   }
 
-  return ok(dollarDB);
+  const today = new Date();
+  const lastUpdate = new Date(dollarDB.createdAt);
+  const diffTime = Math.abs(today.getTime() - lastUpdate.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  let newDollarValue: Types.DollarValueSelectType | null = null;
+  if (diffDays > 1) {
+    try {
+      const newDollarValueResult = await getDollarWeb();
+      if (newDollarValueResult) {
+        const postResult = await postDollarValue(newDollarValueResult);
+
+        if (postResult.isErr()) {
+          return err(postResult.error);
+        }
+
+        newDollarValue = postResult.value;
+      }
+    } catch (error) {
+      console.log("Error with getDollar:", error);
+      console.error("Error with getDollar:", error);
+    }
+  }
+
+  return ok(newDollarValue ?? dollarDB);
 }
 
-export async function postDollarValue(dollarValue: number) {
+export async function postDollarValue(
+  dollarValue: number,
+): Types.ModelPromise<Types.DollarValueSelectType> {
+  const id = `dollarValue_${crypto.randomUUID()}`;
   const postResult = await fromPromise(
     db.insert(schema.DollarValue).values({
-      id: `dollarValue_${crypto.randomUUID()}`,
+      id,
       value: String(dollarValue),
     }),
     (e) => ({
@@ -130,5 +80,5 @@ export async function postDollarValue(dollarValue: number) {
     return err(postResult.error);
   }
 
-  return ok(postResult.value);
+  return ok({ id, createdAt: new Date(), value: String(dollarValue) });
 }

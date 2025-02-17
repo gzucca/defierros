@@ -1,13 +1,22 @@
 import { err, fromPromise, ok } from "neverthrow";
 
 import type { Types } from "@defierros/types";
-import { db, eq, schema } from "@defierros/db";
+import { asc, db, eq, schema } from "@defierros/db";
 
-export async function getAll(): Types.ModelPromise<Types.CarsSelectType[]> {
-  const carsResult = await fromPromise(db.query.Cars.findMany(), (e) => ({
-    code: "DatabaseError" as const,
-    message: `Failed to get all cars: ${(e as Error).message}`,
-  }));
+export async function getAll(): Types.ModelPromise<Types.CarWithBids[]> {
+  const carsResult = await fromPromise(
+    db.query.Cars.findMany({
+      with: {
+        bids: {
+          orderBy: (bids, { desc }) => [desc(bids.createdAt)],
+        },
+      },
+    }),
+    (e) => ({
+      code: "DatabaseError" as const,
+      message: `Failed to get all cars: ${(e as Error).message}`,
+    }),
+  );
 
   if (carsResult.isErr()) return err(carsResult.error);
 
@@ -18,10 +27,16 @@ export async function getById({
   id,
 }: {
   id: string;
-}): Types.ModelPromise<Types.CarsSelectType> {
+}): Types.ModelPromise<Types.CarWithBids> {
   const carResult = await fromPromise(
     db.query.Cars.findFirst({
       where: eq(schema.Cars.id, id),
+      with: {
+        bids: {
+          orderBy: (bids, { desc }) => [desc(bids.createdAt)],
+        },
+      },
+      orderBy: asc(schema.Bids.createdAt),
     }),
     (e) => ({
       code: "DatabaseError" as const,
@@ -45,10 +60,15 @@ export async function getByPostType({
   postType,
 }: {
   postType: "auction" | "sale";
-}): Types.ModelPromise<Types.CarsSelectType[]> {
+}): Types.ModelPromise<Types.CarWithBids[]> {
   const carResult = await fromPromise(
     db.query.Cars.findMany({
       where: eq(schema.Cars.postType, postType),
+      with: {
+        bids: {
+          orderBy: (bids, { desc }) => [desc(bids.createdAt)],
+        },
+      },
     }),
     (e) => ({
       code: "DatabaseError" as const,

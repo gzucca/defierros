@@ -80,7 +80,7 @@ export const AutoCard = ({
 
   useEffect(() => {
     if (bids.length > 0) {
-      setCurrentBid(bids[bids.length - 1]?.ammount ?? 0);
+      setCurrentBid(bids[bids.length - 1]?.amount ?? 0);
     } else {
       setCurrentBid(startingPrice);
     }
