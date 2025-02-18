@@ -4,7 +4,7 @@ import type { Types } from "@defierros/types";
 import { db, schema } from "@defierros/db";
 import { env } from "@defierros/env";
 
-import { Cars, DollarValue, MercadoPago, Users } from ".";
+import { Cars, MercadoPago, Users } from ".";
 
 // Pago para reservar monto de Bid en subasta
 export async function postBidPayment({
@@ -27,7 +27,10 @@ export async function postBidPayment({
   const user = userResponse.value;
 
   if (user.mercadoPagoId === null) {
-    return err(new Error("User has no Mercado Pago ID"));
+    return err({
+      code: "DatabaseError" as const,
+      message: `Failed to post payment: User has no Mercado Pago ID`,
+    });
   }
 
   const auctionResponse = await Cars.getById({ id: auctionId });

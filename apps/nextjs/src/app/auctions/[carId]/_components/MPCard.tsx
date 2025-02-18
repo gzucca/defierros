@@ -107,6 +107,7 @@ export default function MPCard({
       });
 
       if (response.error) {
+        console.log("error de onSubmit: ", response.error);
         setError(
           'Ocurrió un error con el procesamiento de tu pago. Por favor comunicate con el administrador de la pagina al mail info@defierros.com con el asunto "ERROR PROCESAMIENTO DE PAGO". Te pedimos disculpas por las molestias.',
         );
@@ -170,7 +171,6 @@ export default function MPCard({
             locale="es-AR"
           />
         ))}
-        Hi!
     </section>
   );
 }
