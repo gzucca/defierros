@@ -9,7 +9,7 @@ import { filterMap } from "@defierros/utils";
 
 (async () => {
   try {
-    const email = "morallimateo@hotmail.com";
+    const email = "malegnij@gmail.com";
     const getCustomersResult = await MercadoPago.getCustomersByEmail({
       email,
     });
@@ -72,13 +72,38 @@ import { filterMap } from "@defierros/utils";
 
     const customer = lastUpdatedCustomer;
 
+    if (customer?.live_mode === false) {
+      await MercadoPago.deleteCustomerById({
+        mercadoPagoId: customer.id,
+      });
+
+      console.log("email", email);
+
+      const newCustomerResult = await MercadoPago.postCustomer({
+        email,
+        firstName: "Juan Bautista",
+        lastName: "Malegnij",
+      });
+
+      if (newCustomerResult.isErr()) {
+        console.error(newCustomerResult.error);
+        return;
+      }
+
+      const newCustomer = newCustomerResult.value;
+
+      console.log("Check live mode");
+
+      console.dir(newCustomer, { depth: null });
+    }
+
     console.dir(customer, { depth: null });
 
     if (!customer) {
       const newCustomerResult = await MercadoPago.postCustomer({
         email,
-        firstName: "Mateo",
-        lastName: "Moralli",
+        firstName: "Juan Bautista",
+        lastName: "Malegnij",
       });
 
       if (newCustomerResult.isErr()) {
