@@ -2,13 +2,6 @@
 
 This guide outlines a process for adapting old components using Cursor AI. The old components are written in NextJS "Pages" router style, and the new components are written in NextJS "App" router style.
 
-Always use the following imports without changing the path. Read these files to understand the types and models for context:
-* Types folder: "@defierros/types"
-* Models folder: "@defierros/models"
-* DB folder: "@defierros/db"
-* Utils folder: "@defierros/utils"
-* UI folder: "@defierros/ui"
-
 ## 1. Adapt components from Pages router to App router
 
 * 1. Decide if the component should be server or client:

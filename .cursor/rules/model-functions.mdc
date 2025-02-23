@@ -1,0 +1,65 @@
+---
+description: Model functions naming convention and imports
+globs: packages/models/src/*.ts
+---
+# Naming convention
+
+All functions inside the Models package have to include the name of the model they belong to at the beggining using uppercase and an underscore, and then the content of the function. The content of the function consits of the following in camelCase and in order:
+
+1. The Method: GET, POST, PUT, DELETE, UPSERT, GETORCREATE (Required)
+2. The Object that is being returned if it differs significantly from the model name (you may omit this and I can add it as I see neccessary)
+3. The param being used in the Method (Required for GET, PUT, DELETE)
+
+Examples:
+
+- Payments_postBidPayment
+- MercadoPago_getCustomerCardById
+- User_getOrCreateById
+
+# Use Neverthrow fromPromise
+
+Use Neverthrow fromPromise for async functions with a Types.FailureType for failed operations.
+Example:
+
+```typescript
+const usersResult = await fromPromise(db.query.Users.findMany(), (e) => ({
+  code: "DatabaseError" as const,
+  message: `Failed to get all users: ${(e as Error).message}`,
+}));
+```
+
+# Return type
+
+All model functions must return a Types.ModelPromise type object.
+Example:
+
+```typescript
+export async function Users_getAll(): Types.ModelPromise<
+  Types.UsersSelectType[]
+> {
+  const usersResult = await fromPromise(db.query.Users.findMany(), (e) => ({
+    code: "DatabaseError" as const,
+    message: `Failed to get all users: ${(e as Error).message}`,
+  }));
+
+  if (usersResult.isErr()) return err(usersResult.error);
+
+  return ok(usersResult.value);
+}
+```
+
+# Calling Model functions 
+
+When calling model functions inside others model functions, always check for, and return, the error object, and then assign the response value to its own variable.
+
+Example:
+
+```typescript
+  const userResponse = await Users.Users_getById({ id: userId });
+
+  if (userResponse.isErr()) {
+    return err(userResponse.error);
+  }
+
+  const user = userResponse.value;
+```

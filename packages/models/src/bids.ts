@@ -206,7 +206,7 @@ import type { Types } from "@defierros/types";
 //   }
 // }
 
-export async function postBid({
+export async function Bids_postBid({
   userId,
   carId,
   amount,
@@ -289,7 +289,7 @@ export async function postBid({
   return ok({ success: true });
 }
 
-export async function getBid(bidId: string) {
+export async function Bids_getBid(bidId: string) {
   return await fromPromise(
     db.query.Bids.findFirst({
       where: eq(schema.Bids.id, bidId),

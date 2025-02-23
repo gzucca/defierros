@@ -1,14 +1,14 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { Users } from "@defierros/models";
+import { Users_getAll, Users_getByClerkId } from "@defierros/models/users";
 
 import { publicProcedure } from "../trpc";
 
 export const usersRouter = {
   get: {
     all: publicProcedure.query(async () => {
-      const users = await Users.getAll();
+      const users = await Users_getAll();
 
       if (users.isErr()) {
         return { error: users.error.message };
@@ -20,7 +20,7 @@ export const usersRouter = {
     byClerkId: publicProcedure
       .input(z.object({ clerkId: z.string() }))
       .query(async ({ input }) => {
-        const user = await Users.getByClerkId({ clerkId: input.clerkId });
+        const user = await Users_getByClerkId({ clerkId: input.clerkId });
 
         if (user.isErr()) {
           return { error: user.error.message };

@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { z } from "zod";
 
-import { Payments } from "@defierros/models";
+import { Payments_postBidPayment } from "@defierros/models/payments";
 
 import { publicProcedure } from "../trpc";
 
@@ -28,7 +28,7 @@ export const paymentsRouter = {
         }),
       )
       .mutation(async ({ input }) => {
-        const cars = await Payments.postBidPayment(input);
+        const cars = await Payments_postBidPayment(input);
 
         if (cars.isErr()) {
           return { error: cars.error.message };

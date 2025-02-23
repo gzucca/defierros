@@ -7,11 +7,12 @@ import { fromPromise } from "neverthrow";
 import type { Types } from "@defierros/types";
 import { db, eq, schema } from "@defierros/db";
 import { env } from "@defierros/env";
-import { Clerk, Users } from "@defierros/models";
+import { Clerk_clerkClient, Clerk_verifyHook } from "@defierros/models/clerk";
+import { Users_deleteUser } from "@defierros/models/users";
 import { sanitizeEmail } from "@defierros/utils";
 
 export async function POST(req: Request) {
-  const evt = await Clerk.verifyHook(headers, req, env.CLERK_WEBHOOK_SECRET);
+  const evt = await Clerk_verifyHook(headers, req, env.CLERK_WEBHOOK_SECRET);
 
   if (evt.isErr()) {
     return Response.json(
@@ -149,7 +150,7 @@ export async function POST(req: Request) {
   if (eventType === "session.created") {
     const clerkUserId = whPayload.data.user_id;
 
-    const clerkUserApi = await Clerk.clerkClient.users.getUser(clerkUserId);
+    const clerkUserApi = await Clerk_clerkClient.users.getUser(clerkUserId);
 
     if (clerkUserApi.primaryEmailAddress != null) {
       try {
@@ -221,7 +222,7 @@ export async function POST(req: Request) {
     if (!whPayload.data.id) {
       return new Response("User ID is required", { status: 400 });
     }
-    const deleteResult = await Users.deleteUser({
+    const deleteResult = await Users_deleteUser({
       userId: whPayload.data.id,
     });
 

@@ -4,9 +4,24 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "exports": {
-    ".": "./src/index.ts"
+  "types": "./src/index.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./src/*"
+      ]
+    }
   },
+  "exports": {
+    "./cars": "./src/cars.ts",
+    "./users": "./src/users.ts",
+    "./clerk": "./src/clerk.ts",
+    "./bids": "./src/bids.ts",
+    "./mercadopago": "./src/mercadopago.ts",
+    "./dollarValue": "./src/dollarValue.ts",
+    "./payments": "./src/payments.ts"
+  },
+  "sideEffects": false,
   "scripts": {
     "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",

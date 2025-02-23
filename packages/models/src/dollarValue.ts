@@ -3,14 +3,14 @@ import { err, fromPromise, ok } from "neverthrow";
 import type { Types } from "@defierros/types";
 import { db, desc, schema } from "@defierros/db";
 
-export async function getDollarWeb() {
+export async function DollarValue_getDollarWeb() {
   const response = await fetch("https://dolarapi.com/v1/dolares/oficial");
   const data = (await response.json()) as { compra: number };
   return data.compra;
 }
 
 // Returns the dollar value from the web or the DB
-export async function getDollarWebOrDB(): Types.ModelPromise<Types.DollarValueSelectType> {
+export async function DollarValue_getDollarWebOrDB(): Types.ModelPromise<Types.DollarValueSelectType> {
   const dollarDBResult = await fromPromise(
     db.query.DollarValue.findFirst({
       orderBy: [desc(schema.DollarValue.createdAt)],
@@ -42,9 +42,9 @@ export async function getDollarWebOrDB(): Types.ModelPromise<Types.DollarValueSe
   let newDollarValue: Types.DollarValueSelectType | null = null;
   if (diffDays > 1) {
     try {
-      const newDollarValueResult = await getDollarWeb();
+      const newDollarValueResult = await DollarValue_getDollarWeb();
       if (newDollarValueResult) {
-        const postResult = await postDollarValue(newDollarValueResult);
+        const postResult = await DollarValue_postDollarValue(newDollarValueResult);
 
         if (postResult.isErr()) {
           return err(postResult.error);
@@ -61,7 +61,7 @@ export async function getDollarWebOrDB(): Types.ModelPromise<Types.DollarValueSe
   return ok(newDollarValue ?? dollarDB);
 }
 
-export async function postDollarValue(
+export async function DollarValue_postDollarValue(
   dollarValue: number,
 ): Types.ModelPromise<Types.DollarValueSelectType> {
   const id = `dollarValue_${crypto.randomUUID()}`;

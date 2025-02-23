@@ -4,13 +4,17 @@
  */
 
 import type { Types } from "@defierros/types";
-import { MercadoPago } from "@defierros/models";
+import {
+  MercadoPago_deleteCustomerById,
+  MercadoPago_getCustomersByEmail,
+  MercadoPago_postCustomer,
+} from "@defierros/models/mercadopago";
 import { filterMap } from "@defierros/utils";
 
 (async () => {
   try {
     const email = "malegnij@gmail.com";
-    const getCustomersResult = await MercadoPago.getCustomersByEmail({
+    const getCustomersResult = await MercadoPago_getCustomersByEmail({
       email,
     });
 
@@ -57,7 +61,7 @@ import { filterMap } from "@defierros/utils";
         );
 
         for (const customer of oldCustomers) {
-          const deleteCustomerResult = await MercadoPago.deleteCustomerById({
+          const deleteCustomerResult = await MercadoPago_deleteCustomerById({
             mercadoPagoId: customer.id,
           });
 
@@ -73,13 +77,13 @@ import { filterMap } from "@defierros/utils";
     const customer = lastUpdatedCustomer;
 
     if (customer?.live_mode === false) {
-      await MercadoPago.deleteCustomerById({
+      await MercadoPago_deleteCustomerById({
         mercadoPagoId: customer.id,
       });
 
       console.log("email", email);
 
-      const newCustomerResult = await MercadoPago.postCustomer({
+      const newCustomerResult = await MercadoPago_postCustomer({
         email,
         firstName: "Juan Bautista",
         lastName: "Malegnij",
@@ -100,7 +104,7 @@ import { filterMap } from "@defierros/utils";
     console.dir(customer, { depth: null });
 
     if (!customer) {
-      const newCustomerResult = await MercadoPago.postCustomer({
+      const newCustomerResult = await MercadoPago_postCustomer({
         email,
         firstName: "Juan Bautista",
         lastName: "Malegnij",

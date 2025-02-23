@@ -9,7 +9,7 @@ import { Webhook } from "svix";
 import type { Types } from "@defierros/types";
 import { env } from "@defierros/env";
 
-export const clerkClient = createClerkClient({
+export const Clerk_clerkClient = createClerkClient({
   secretKey: env.CLERK_SECRET_KEY,
 });
 
@@ -38,7 +38,7 @@ function verifyJWT(token: string) {
   });
 }
 
-export async function checkAuth(
+export async function Clerk_checkAuth(
   req: Request,
 ): Promise<Result<Types.ClerkAuthSuccessType, Types.FailureType>> {
   const sessionToken = req.headers.get("Authorization") ?? "";
@@ -65,7 +65,7 @@ export async function checkAuth(
   return verified;
 }
 
-export async function verifyHook(
+export async function Clerk_verifyHook(
   headers: () => Headers,
   req: Request,
   WEBHOOK_SECRET: string,

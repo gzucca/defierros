@@ -13,7 +13,7 @@ export const mercadoPagoClient = new MercadoPagoConfig({
 const mpCustomer = new Customer(mercadoPagoClient);
 const mpPayment = new Payment(mercadoPagoClient);
 
-export async function postCustomer({
+export async function MercadoPago_postCustomer({
   email,
   firstName,
   lastName,
@@ -45,7 +45,7 @@ export async function postCustomer({
   return ok(newCustomer);
 }
 
-export async function getCustomerById({
+export async function MercadoPago_getCustomerById({
   mercadoPagoId,
 }: {
   mercadoPagoId: string;
@@ -69,7 +69,7 @@ export async function getCustomerById({
   return ok(customer);
 }
 
-export async function getCustomersByEmail({
+export async function MercadoPago_getCustomersByEmail({
   email,
 }: {
   email: string;
@@ -112,7 +112,7 @@ export async function getCustomersByEmail({
   return ok(customersWithId);
 }
 
-export async function deleteCustomerById({
+export async function MercadoPago_deleteCustomerById({
   mercadoPagoId,
 }: {
   mercadoPagoId: string;
@@ -136,7 +136,7 @@ export async function deleteCustomerById({
   return ok(customer);
 }
 
-export async function getCustomerCardById({
+export async function MercadoPago_getCustomerCardById({
   customerId,
   cardId,
 }: {
@@ -163,7 +163,7 @@ export async function getCustomerCardById({
   return ok(customerCard);
 }
 
-export async function postCustomerCard({
+export async function MercadoPago_postCustomerCard({
   customerId,
   token,
   requestOptions,
@@ -193,7 +193,7 @@ export async function postCustomerCard({
   return ok(customerCard);
 }
 
-export async function postPayment({
+export async function MercadoPago_postPayment({
   body,
 }: {
   body: Types.PaymentCreateRequest;
@@ -213,7 +213,7 @@ export async function postPayment({
   return ok(paymentResponse.value);
 }
 
-export async function getPaymentById({
+export async function MercadoPago_getPaymentById({
   paymentId,
 }: {
   paymentId: string;

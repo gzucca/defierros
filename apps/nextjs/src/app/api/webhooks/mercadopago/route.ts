@@ -3,9 +3,11 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { err } from "neverthrow";
 
-import { db, schema } from "@defierros/db";
 import { env } from "@defierros/env";
-import { Bids, DollarValue, MercadoPago, Payments } from "@defierros/models";
+import { Bids_postBid } from "@defierros/models/bids";
+import { DollarValue_getDollarWebOrDB } from "@defierros/models/dollarValue";
+import { MercadoPago_getPaymentById } from "@defierros/models/mercadopago";
+import { Payments_postPayment } from "@defierros/models/payments";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -84,7 +86,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing paymentId" }, { status: 400 });
     }
 
-    const paymentResponse = await MercadoPago.getPaymentById({ paymentId });
+    const paymentResponse = await MercadoPago_getPaymentById({ paymentId });
 
     if (paymentResponse.isErr()) {
       console.log(
@@ -102,7 +104,7 @@ export async function POST(req: Request) {
     console.log("payment:");
     console.dir(payment, { depth: null });
 
-    const dollarValueResult = await DollarValue.getDollarWebOrDB();
+    const dollarValueResult = await DollarValue_getDollarWebOrDB();
 
     if (dollarValueResult.isErr()) {
       return err(dollarValueResult.error);
@@ -125,7 +127,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const postPaymentResponse = await Payments.postPayment({
+    const postPaymentResponse = await Payments_postPayment({
       id: paymentIdInsert,
       userId,
       dollarValueId: dollarValue.id,
@@ -145,7 +147,7 @@ export async function POST(req: Request) {
 
     console.log("postPayment:", postPayment);
 
-    const postBidResponse = await Bids.postBid({
+    const postBidResponse = await Bids_postBid({
       userId,
       carId,
       amount: Number(payment.transaction_amount),

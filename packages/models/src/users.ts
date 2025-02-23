@@ -3,7 +3,7 @@ import { err, fromPromise, ok } from "neverthrow";
 import type { Types } from "@defierros/types";
 import { db, eq, schema } from "@defierros/db";
 
-export async function getAll(): Types.ModelPromise<Types.UsersSelectType[]> {
+export async function Users_getAll(): Types.ModelPromise<Types.UsersSelectType[]> {
   const usersResult = await fromPromise(db.query.Users.findMany(), (e) => ({
     code: "DatabaseError" as const,
     message: `Failed to get all users: ${(e as Error).message}`,
@@ -14,7 +14,7 @@ export async function getAll(): Types.ModelPromise<Types.UsersSelectType[]> {
   return ok(usersResult.value);
 }
 
-export async function getByClerkId({
+export async function Users_getByClerkId({
   clerkId,
 }: {
   clerkId: string;
@@ -39,7 +39,7 @@ export async function getByClerkId({
   return ok(userResult.value);
 }
 
-export async function getById({
+export async function Users_getById({
   id,
 }: {
   id: string;
@@ -64,7 +64,7 @@ export async function getById({
   return ok(userResult.value);
 }
 
-export async function deleteUser({
+export async function Users_deleteUser({
   userId,
   tx,
 }: {

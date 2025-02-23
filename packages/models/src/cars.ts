@@ -3,7 +3,7 @@ import { err, fromPromise, ok } from "neverthrow";
 import type { Types } from "@defierros/types";
 import { asc, db, eq, schema } from "@defierros/db";
 
-export async function getAll(): Types.ModelPromise<Types.CarWithBids[]> {
+export async function Cars_getAll(): Types.ModelPromise<Types.CarWithBids[]> {
   const carsResult = await fromPromise(
     db.query.Cars.findMany({
       with: {
@@ -23,7 +23,7 @@ export async function getAll(): Types.ModelPromise<Types.CarWithBids[]> {
   return ok(carsResult.value);
 }
 
-export async function getById({
+export async function Cars_getById({
   id,
 }: {
   id: string;
@@ -56,7 +56,7 @@ export async function getById({
   return ok(carResult.value);
 }
 
-export async function getByPostType({
+export async function Cars_getByPostType({
   postType,
 }: {
   postType: "auction" | "sale";

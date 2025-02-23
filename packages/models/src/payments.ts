@@ -4,10 +4,12 @@ import type { Types } from "@defierros/types";
 import { db, schema } from "@defierros/db";
 import { env } from "@defierros/env";
 
-import { Cars, MercadoPago, Users } from ".";
+import * as Cars from "./cars";
+import * as MercadoPago from "./mercadopago";
+import * as Users from "./users";
 
 // Pago para reservar monto de Bid en subasta
-export async function postBidPayment({
+export async function Payments_postBidPayment({
   userId,
   auctionId,
   token,
@@ -18,7 +20,7 @@ export async function postBidPayment({
   payer,
   ipAddress,
 }: Types.MPFormData) {
-  const userResponse = await Users.getById({ id: userId });
+  const userResponse = await Users.Users_getById({ id: userId });
 
   if (userResponse.isErr()) {
     return err(userResponse.error);
@@ -33,7 +35,7 @@ export async function postBidPayment({
     });
   }
 
-  const auctionResponse = await Cars.getById({ id: auctionId });
+  const auctionResponse = await Cars.Cars_getById({ id: auctionId });
 
   if (auctionResponse.isErr()) {
     return err(auctionResponse.error);
@@ -120,7 +122,7 @@ export async function postBidPayment({
     capture: false,
   } as Types.PaymentCreateRequest;
 
-  const paymentResponse = await MercadoPago.postPayment({
+  const paymentResponse = await MercadoPago.MercadoPago_postPayment({
     body: bodyMercadoPago,
   });
 
@@ -133,7 +135,7 @@ export async function postBidPayment({
   return ok(payment);
 }
 
-export async function postPayment({
+export async function Payments_postPayment({
   id,
   userId,
   dollarValueId,
