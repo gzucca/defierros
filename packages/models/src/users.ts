@@ -3,6 +3,8 @@ import { err, fromPromise, ok } from "neverthrow";
 import type { Types } from "@defierros/types";
 import { db, eq, schema } from "@defierros/db";
 
+
+
 export async function Users_getAll(): Types.ModelPromise<Types.UsersSelectType[]> {
   const usersResult = await fromPromise(db.query.Users.findMany(), (e) => ({
     code: "DatabaseError" as const,

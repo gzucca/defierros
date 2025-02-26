@@ -8,6 +8,10 @@ import type { Types } from "@defierros/types";
 import { db, eq, schema } from "@defierros/db";
 import { env } from "@defierros/env";
 import { Clerk_clerkClient, Clerk_verifyHook } from "@defierros/models/clerk";
+import {
+  MercadoPago_getOnlyOneCustomer,
+  MercadoPago_getOrCreateCustomer,
+} from "@defierros/models/mercadopago";
 import { Users_deleteUser } from "@defierros/models/users";
 import { sanitizeEmail } from "@defierros/utils";
 
@@ -53,11 +57,9 @@ export async function POST(req: Request) {
       return new Response("User already exists", { status: 200 });
     }
 
-    const clerkName =
-      whPayload.data.first_name?.concat(
-        " " + (whPayload.data.last_name ?? ""),
-      ) ?? null;
-
+    const clerkFirstName = whPayload.data.first_name ?? null;
+    const clerkLastName = whPayload.data.last_name ?? null;
+    const clerkFullName = clerkFirstName?.concat(" " + clerkLastName) ?? null;
     const clerkUserName = whPayload.data.username ?? null;
     const clerkEmail = whPayload.data.email_addresses[0]?.email_address ?? null;
 
@@ -109,13 +111,28 @@ export async function POST(req: Request) {
 
     const sanitizedEmail = sanitizeEmail(clerkEmail);
 
+    const mpCustomerResult = await MercadoPago_getOrCreateCustomer({
+      firstName: clerkFirstName ?? clerkUserName ?? sanitizedEmail,
+      lastName: clerkLastName ?? clerkUserName ?? sanitizedEmail,
+      email: clerkEmail,
+      liveMode: env.NODE_ENV === "production" ? true : false,
+    });
+
+    if (mpCustomerResult.isErr()) {
+      console.log(mpCustomerResult.error);
+      return Response.json(mpCustomerResult.error, { status: 500 });
+    }
+
+    const mpCustomer = mpCustomerResult.value;
+
     const data = {
       id: `user_${randomUUID()}`,
       email: clerkEmail,
-      name: clerkName ?? clerkUserName ?? sanitizedEmail,
+      name: clerkFullName ?? clerkUserName ?? sanitizedEmail,
       userName: clerkUserName ?? sanitizedEmail,
       profilePicture: whPayload.data.image_url,
       clerkId: clerkUserId,
+      mercadoPagoId: mpCustomer.id,
       isActive: true,
       isAdmin: false,
     };
