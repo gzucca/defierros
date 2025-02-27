@@ -12,14 +12,20 @@ import {
   MercadoPago_getOnlyOneCustomer,
   MercadoPago_getOrCreateCustomer,
 } from "@defierros/models/mercadopago";
-import { Users_deleteUser } from "@defierros/models/users";
+import {
+  Users_deleteUser,
+  Users_getByClerkId,
+  Users_getByEmail,
+  Users_post,
+  Users_putBy,
+} from "@defierros/models/users";
 import { sanitizeEmail } from "@defierros/utils";
 
 export async function POST(req: Request) {
   const evt = await Clerk_verifyHook(headers, req, env.CLERK_WEBHOOK_SECRET);
 
   if (evt.isErr()) {
-    return Response.json(
+    return NextResponse.json(
       { code: evt.error.code, message: evt.error.message },
       { status: 401 },
     );
@@ -36,25 +42,19 @@ export async function POST(req: Request) {
     const clerkUserId = whPayload.data.id;
 
     // Check if user already exists
-    const prevUser: Result<Types.UsersSelectType[], Types.FailureType> =
-      await fromPromise(
-        db
-          .select()
-          .from(schema.Users)
-          .where(eq(schema.Users.clerkId, clerkUserId)),
-        (err) => ({
-          code: "NetworkError",
-          message: `Error during user.created Clerk Webhook select operation. error: ${JSON.stringify(err)}`,
-        }),
-      );
-    if (prevUser.isErr()) {
-      console.log(prevUser.error);
-      return Response.json(prevUser.error, { status: 500 });
+    const prevUserByClerkIdResult = await Users_getByClerkId({
+      clerkId: clerkUserId,
+    });
+    if (prevUserByClerkIdResult.isErr()) {
+      console.log(prevUserByClerkIdResult.error);
+      return NextResponse.json(prevUserByClerkIdResult.error, { status: 500 });
     }
 
-    if (prevUser.value[0]) {
+    const prevUserByClerkId = prevUserByClerkIdResult.value;
+
+    if (prevUserByClerkId) {
       console.log(`User with clerkId ${clerkUserId} already exists`);
-      return new Response("User already exists", { status: 200 });
+      return NextResponse.json("User already exists", { status: 200 });
     }
 
     const clerkFirstName = whPayload.data.first_name ?? null;
@@ -64,49 +64,37 @@ export async function POST(req: Request) {
     const clerkEmail = whPayload.data.email_addresses[0]?.email_address ?? null;
 
     if (!clerkEmail) {
-      return Response.json(
+      return NextResponse.json(
         { code: "InvalidEmailError", message: "Email is required" },
         { status: 400 },
       );
     }
 
     // Check if email already exists
-    const prevUserEmail: Result<Types.UsersSelectType[], Types.FailureType> =
-      await fromPromise(
-        db
-          .select()
-          .from(schema.Users)
-          .where(eq(schema.Users.email, clerkEmail)),
-        (err) => ({
-          code: "NetworkError",
-          message: `Error during user.created Clerk Webhook select operation. error: ${JSON.stringify(err)}`,
-        }),
-      );
-    if (prevUserEmail.isErr()) {
-      console.log(prevUserEmail.error);
-      return Response.json(prevUserEmail.error, { status: 500 });
+    const prevUserByEmailResult = await Users_getByEmail({
+      email: clerkEmail,
+    });
+    if (prevUserByEmailResult.isErr()) {
+      console.log(prevUserByEmailResult.error);
+      return NextResponse.json(prevUserByEmailResult.error, { status: 500 });
     }
 
+    const prevUserByEmail = prevUserByEmailResult.value;
+
     // Update clerkId if email already exists
-    if (prevUserEmail.value[0]) {
-      console.log(`User with email ${clerkEmail} already exists`);
-      const newUser = await fromPromise(
-        db
-          .update(schema.Users)
-          .set({
-            clerkId: clerkUserId,
-          })
-          .where(eq(schema.Users.email, clerkEmail)),
-        (err) => ({
-          code: "NetworkError",
-          message: `Error during user.created Clerk Webhook update operation. error: ${JSON.stringify(err)}`,
-        }),
+    if (prevUserByEmail && prevUserByEmail.clerkId !== clerkUserId) {
+      console.log(
+        `User with email ${clerkEmail} already but different clerkId exists. Updating clerkId to ${clerkUserId}`,
       );
-      if (newUser.isErr()) {
-        console.log(newUser.error);
-        return Response.json(newUser.error, { status: 500 });
+      const updateUserResult = await Users_putBy({
+        email: clerkEmail,
+        newData: { clerkId: clerkUserId },
+      });
+      if (updateUserResult.isErr()) {
+        console.log(updateUserResult.error);
+        return NextResponse.json(updateUserResult.error, { status: 500 });
       }
-      return new Response("Updated user with email", { status: 200 });
+      return NextResponse.json("Updated user with email", { status: 200 });
     }
 
     const sanitizedEmail = sanitizeEmail(clerkEmail);
@@ -120,10 +108,25 @@ export async function POST(req: Request) {
 
     if (mpCustomerResult.isErr()) {
       console.log(mpCustomerResult.error);
-      return Response.json(mpCustomerResult.error, { status: 500 });
+      return NextResponse.json(mpCustomerResult.error, { status: 500 });
     }
 
     const mpCustomer = mpCustomerResult.value;
+
+    if (prevUserByEmail && prevUserByEmail.mercadoPagoId !== mpCustomer.id) {
+      console.log(
+        `User with email ${clerkEmail} already but different mercadoPagoId exists. Updating mercadoPagoId to ${mpCustomer.id}`,
+      );
+      const updateUserResult = await Users_putBy({
+        email: clerkEmail,
+        newData: { mercadoPagoId: mpCustomer.id },
+      });
+      if (updateUserResult.isErr()) {
+        console.log(updateUserResult.error);
+        return NextResponse.json(updateUserResult.error, { status: 500 });
+      }
+      return NextResponse.json("Updated user with email", { status: 200 });
+    }
 
     const data = {
       id: `user_${randomUUID()}`,
@@ -139,28 +142,20 @@ export async function POST(req: Request) {
 
     console.log(`User data:`, data);
 
-    if (!prevUser.value[0]) {
-      // create user if not exists
-      const newUser = await fromPromise(
-        db.insert(schema.Users).values(data),
-        (err) => ({
-          code: "NetworkError",
-          message: `Error during user.created Clerk Webhook insert operation. error: ${JSON.stringify(err)}`,
-        }),
-      );
-      if (newUser.isErr()) {
-        console.log(newUser.error);
-        return Response.json(newUser.error, { status: 500 });
-      }
-
-      // fire posthog user created event for each user
-      // PH.captureServerEvent(data.id, "user.created", {
-      //   email: data.email,
-      //   displayName: data.displayName,
-      // });
+    // create user if not exists
+    const newUserResult = await Users_post(data);
+    if (newUserResult.isErr()) {
+      console.log(newUserResult.error);
+      return NextResponse.json(newUserResult.error, { status: 500 });
     }
 
-    return new Response("Webhook received", { status: 201 });
+    // fire posthog user created event for each user
+    // PH.captureServerEvent(data.id, "user.created", {
+    //   email: data.email,
+    //   displayName: data.displayName,
+    // });
+
+    return NextResponse.json("Webhook received", { status: 201 });
   }
 
   // session create
@@ -168,76 +163,63 @@ export async function POST(req: Request) {
     const clerkUserId = whPayload.data.user_id;
 
     const clerkUserApi = await Clerk_clerkClient.users.getUser(clerkUserId);
+    const clerkEmail = clerkUserApi.primaryEmailAddress?.emailAddress ?? null;
+    if (!clerkEmail) {
+      return NextResponse.json(
+        { code: "InvalidEmailError", message: "Email is required" },
+        { status: 400 },
+      );
+    }
 
-    if (clerkUserApi.primaryEmailAddress != null) {
-      try {
-        const userDB = await db
-          .select()
-          .from(schema.Users)
-          .where(
-            eq(
-              schema.Users.email,
-              clerkUserApi.primaryEmailAddress.emailAddress,
-            ),
-          );
+    const userDBResult = await Users_getByEmail({
+      email: clerkEmail,
+    });
+    if (userDBResult.isErr()) {
+      console.log(userDBResult.error);
+      return NextResponse.json(userDBResult.error, { status: 500 });
+    }
 
-        const matchingUser = userDB[0];
-        if (matchingUser == null) {
-          throw new Error(`matchingUser == null`);
-        }
+    const userDB = userDBResult.value;
 
-        if (matchingUser.id === clerkUserId) {
-          console.log(
-            `Session created for user with email ${matchingUser.email} and clerk_id ${clerkUserId}`,
-          );
-          return new NextResponse(
-            `Session created for user with email ${matchingUser.email} and clerk_id ${clerkUserId}`,
-            {
-              status: 200,
-            },
-          );
-        }
+    if (userDB == null) {
+      throw new Error(`matchingUser == null`);
+    }
 
-        if (userDB.length && matchingUser.id !== clerkUserId) {
-          await db
-            .update(schema.Users)
-            .set({
-              id: clerkUserId,
-            })
-            .where(eq(schema.Users.id, matchingUser.id));
+    if (userDB.id === clerkUserId) {
+      console.log(
+        `Session created for user with email ${userDB.email} and clerk_id ${clerkUserId}`,
+      );
+      return NextResponse.json(
+        `Session created for user with email ${userDB.email} and clerk_id ${clerkUserId}`,
+        {
+          status: 200,
+        },
+      );
+    }
 
-          console.log(
-            `Updated user with email ${matchingUser.email} to replace old clerk_id ${matchingUser.id} with new clerk_id ${clerkUserId}`,
-          );
+    if (userDB.id !== clerkUserId) {
+      await Users_putBy({
+        email: clerkEmail,
+        newData: { clerkId: clerkUserId },
+      });
 
-          return new NextResponse(
-            `Updated user with email ${matchingUser.email} to replace old clerk_id ${matchingUser.id} with new clerk_id ${clerkUserId}`,
-            {
-              status: 200,
-            },
-          );
-        }
-      } catch (err) {
-        const message = (() => {
-          if (err instanceof Error) {
-            return err.message;
-          } else {
-            return `Unknown error in user.created Clerk Webhook. error: ${JSON.stringify(err)}`;
-          }
-        })();
-        console.error("Clerk Webhook ERROR with user.created", err);
+      console.log(
+        `Updated user with email ${userDB.email} to replace old clerk_id ${userDB.id} with new clerk_id ${clerkUserId}`,
+      );
 
-        return new NextResponse(message, {
-          status: 500,
-        });
-      }
+      return NextResponse.json(
+        `Updated user with email ${userDB.email} to replace old clerk_id ${userDB.id} with new clerk_id ${clerkUserId}`,
+        {
+          status: 200,
+        },
+      );
     }
   }
 
   // User deleted
   if (eventType === "user.deleted") {
     if (!whPayload.data.id) {
-      return new Response("User ID is required", { status: 400 });
+      return NextResponse.json("User ID is required", { status: 400 });
     }
     const deleteResult = await Users_deleteUser({
       userId: whPayload.data.id,
@@ -245,14 +227,14 @@ export async function POST(req: Request) {
 
     if (deleteResult.isErr()) {
       console.error(JSON.stringify(deleteResult.error));
-      return new Response("DatabaseError", { status: 500 });
+      return NextResponse.json("DatabaseError", { status: 500 });
     }
 
     console.log("User deleted from DB.");
-    return new Response("Webhook received", { status: 200 });
+    return NextResponse.json("Webhook received", { status: 200 });
   }
 
-  return Response.json(
+  return NextResponse.json(
     { code: "InvalidWebhookEvent", message: "Unknown webhook event" },
     { status: 404 },
   );

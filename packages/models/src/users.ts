@@ -3,9 +3,9 @@ import { err, fromPromise, ok } from "neverthrow";
 import type { Types } from "@defierros/types";
 import { db, eq, schema } from "@defierros/db";
 
-
-
-export async function Users_getAll(): Types.ModelPromise<Types.UsersSelectType[]> {
+export async function Users_getAll(): Types.ModelPromise<
+  Types.UsersSelectType[]
+> {
   const usersResult = await fromPromise(db.query.Users.findMany(), (e) => ({
     code: "DatabaseError" as const,
     message: `Failed to get all users: ${(e as Error).message}`,
@@ -20,7 +20,7 @@ export async function Users_getByClerkId({
   clerkId,
 }: {
   clerkId: string;
-}): Types.ModelPromise<Types.UsersSelectType> {
+}): Types.ModelPromise<Types.UsersSelectType | null> {
   const userResult = await fromPromise(
     db.query.Users.findFirst({
       where: eq(schema.Users.clerkId, clerkId),
@@ -32,11 +32,9 @@ export async function Users_getByClerkId({
   );
 
   if (userResult.isErr()) return err(userResult.error);
-  if (!userResult.value)
-    return err({
-      code: "NotFoundError" as const,
-      message: `User with clerkId ${clerkId} not found`,
-    });
+  if (!userResult.value) {
+    return ok(null);
+  }
 
   return ok(userResult.value);
 }
@@ -45,7 +43,7 @@ export async function Users_getById({
   id,
 }: {
   id: string;
-}): Types.ModelPromise<Types.UsersSelectType> {
+}): Types.ModelPromise<Types.UsersSelectType | null> {
   const userResult = await fromPromise(
     db.query.Users.findFirst({
       where: eq(schema.Users.id, id),
@@ -57,11 +55,32 @@ export async function Users_getById({
   );
 
   if (userResult.isErr()) return err(userResult.error);
-  if (!userResult.value)
-    return err({
-      code: "NotFoundError" as const,
-      message: `User with id ${id} not found`,
-    });
+  if (!userResult.value) {
+    return ok(null);
+  }
+
+  return ok(userResult.value);
+}
+
+export async function Users_getByEmail({
+  email,
+}: {
+  email: string;
+}): Types.ModelPromise<Types.UsersSelectType | null> {
+  const userResult = await fromPromise(
+    db.query.Users.findFirst({
+      where: eq(schema.Users.email, email),
+    }),
+    (e) => ({
+      code: "DatabaseError" as const,
+      message: `Failed to get user by email ${email}: ${(e as Error).message}`,
+    }),
+  );
+
+  if (userResult.isErr()) return err(userResult.error);
+  if (!userResult.value) {
+    return ok(null);
+  }
 
   return ok(userResult.value);
 }
@@ -134,4 +153,105 @@ export async function Users_deleteUser({
 
   // If transaction is provided, use it
   return await runWithTx(tx);
+}
+
+export async function Users_post(
+  args: {
+    id: string;
+    clerkId: string;
+    email: string;
+  } & Partial<Types.UsersInsertType>,
+): Types.ModelPromise<{ success: boolean }> {
+  const userResult = await fromPromise(
+    db.insert(schema.Users).values(args),
+    (e) => ({
+      code: "DatabaseError" as const,
+      message: `Failed to insert user: ${(e as Error).message}`,
+    }),
+  );
+
+  if (userResult.isErr()) return err(userResult.error);
+
+  return ok({ success: true });
+}
+
+export async function Users_putBy({
+  email,
+  id,
+  clerkId,
+  mercadoPagoId,
+  newData,
+}: {
+  email?: string;
+  id?: string;
+  clerkId?: string;
+  mercadoPagoId?: string;
+  newData: Partial<Types.UsersSelectType>;
+}): Types.ModelPromise<{ success: boolean }> {
+  if (id) {
+    const userResult = await fromPromise(
+      db.update(schema.Users).set(newData).where(eq(schema.Users.id, id)),
+      (e) => ({
+        code: "DatabaseError" as const,
+        message: `Failed to update user by id ${id}: ${(e as Error).message}`,
+      }),
+    );
+
+    if (userResult.isErr()) return err(userResult.error);
+
+    return ok({ success: true });
+  }
+
+  if (email) {
+    const userResult = await fromPromise(
+      db.update(schema.Users).set(newData).where(eq(schema.Users.email, email)),
+      (e) => ({
+        code: "DatabaseError" as const,
+        message: `Failed to update user by email ${email}: ${(e as Error).message}`,
+      }),
+    );
+
+    if (userResult.isErr()) return err(userResult.error);
+
+    return ok({ success: true });
+  }
+
+  if (clerkId) {
+    const userResult = await fromPromise(
+      db
+        .update(schema.Users)
+        .set(newData)
+        .where(eq(schema.Users.clerkId, clerkId)),
+      (e) => ({
+        code: "DatabaseError" as const,
+        message: `Failed to update user by clerkId ${clerkId}: ${(e as Error).message}`,
+      }),
+    );
+
+    if (userResult.isErr()) return err(userResult.error);
+
+    return ok({ success: true });
+  }
+
+  if (mercadoPagoId) {
+    const userResult = await fromPromise(
+      db
+        .update(schema.Users)
+        .set(newData)
+        .where(eq(schema.Users.mercadoPagoId, mercadoPagoId)),
+      (e) => ({
+        code: "DatabaseError" as const,
+        message: `Failed to update user by mercadoPagoId ${mercadoPagoId}: ${(e as Error).message}`,
+      }),
+    );
+
+    if (userResult.isErr()) return err(userResult.error);
+
+    return ok({ success: true });
+  }
+
+  return err({
+    code: "InvalidArgsError" as const,
+    message: "No id, email, clerkId, or mercadoPagoId provided",
+  });
 }

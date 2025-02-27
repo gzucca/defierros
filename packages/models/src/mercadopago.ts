@@ -335,7 +335,7 @@ export async function MercadoPago_getOrCreateCustomer({
   firstName: string;
   lastName: string;
   liveMode?: boolean;
-}): Types.ModelPromise<Types.CustomerResponseWithId> {
+}): Types.ModelPromise<Types.CustomerResponse> {
   const getCustomerResult = await MercadoPago_getOnlyOneCustomer({
     email,
     liveMode,
@@ -360,7 +360,7 @@ export async function MercadoPago_getOrCreateCustomer({
 
     const newCustomer = newCustomerResult.value;
 
-    return ok(newCustomer as Types.CustomerResponseWithId);
+    return ok(newCustomer);
   }
 
   return ok(getCustomer);

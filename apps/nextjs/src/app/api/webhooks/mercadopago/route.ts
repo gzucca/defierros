@@ -166,8 +166,6 @@ export async function POST(req: Request) {
     console.log("postBid:", postBid);
   }
 
-
-
   return NextResponse.json(
     { message: "Successfully processed webhook" },
     { status: 200 },
