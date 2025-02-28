@@ -17,30 +17,11 @@ import { TRPCReactProvider } from "~/trpc/react";
 
 import "~/app/globals.css";
 
-import { initMercadoPago } from "@mercadopago/sdk-react";
-
 import { env } from "@defierros/env";
 
 
-// if (typeof window !== "undefined") {
-//   // checks that we are client-side
-//   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-//     capture_pageview: false,
-//     api_host:
-//       process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
-//     person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well
-//     loaded: (posthog) => {
-//       if (env.ENV === "development") posthog.debug(); // debug mode in development
-//     },
-//   });
-// }
-
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    env.VERCEL_ENV === "production"
-      ? env.NEXT_PUBLIC_CLIENT_URL
-      : "http://localhost:3000",
-  ),
+  metadataBase: new URL(env.NEXT_PUBLIC_CLIENT_URL),
   title: "Defierros",
   description: "Simple monorepo with shared backend for web & mobile apps",
   openGraph: {
@@ -49,11 +30,11 @@ export const metadata: Metadata = {
     url: env.NEXT_PUBLIC_CLIENT_URL,
     siteName: "Defierros",
   },
-  twitter: {
-    card: "summary_large_image",
-    site: "@jullerino",
-    creator: "@jullerino",
-  },
+  // twitter: {
+  //   card: "summary_large_image",
+  //   site: "@jullerino",
+  //   creator: "@jullerino",
+  // },
 };
 
 export const viewport: Viewport = {
