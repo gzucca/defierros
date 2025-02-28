@@ -19,7 +19,8 @@
     "./bids": "./src/bids.ts",
     "./mercadopago": "./src/mercadopago.ts",
     "./dollarValue": "./src/dollarValue.ts",
-    "./payments": "./src/payments.ts"
+    "./payments": "./src/payments.ts",
+    "./discord": "./src/discord.ts"
   },
   "sideEffects": false,
   "scripts": {

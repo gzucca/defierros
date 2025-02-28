@@ -24,7 +24,8 @@ export type FailureCode =
   | "LangchainError"
   | "UpstashError"
   | "ServerActionError"
-  | "LavinMQError";
+  | "LavinMQError"
+  | "DiscordError";
 
 export interface FailureType {
   code: FailureCode;

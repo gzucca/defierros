@@ -24,6 +24,7 @@ export const env = createEnv({
     MERCADOPAGO_ACCESS_TOKEN: z.string(),
     WEBHOOKS_URL: z.string().url(),
     MERCADOPAGO_WEBHOOK_SECRET: z.string(),
+    DISCORD_BOT_TOKEN: z.string(),
   },
 
   /**
